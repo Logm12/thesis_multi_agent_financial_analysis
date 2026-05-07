@@ -1,10 +1,10 @@
-# Multi-Agent Financial Analysis Platform 💹🤖
+# Multi-Agent Financial Analysis Platform 
 
 > A state-of-the-art financial document parser and intelligent multi-agent Q&A platform built on top of LangGraph, FastAPI, ChromaDB, and React. Inspired by deep-space command terminal aesthetics.
 
 ---
 
-## 🗺️ System Architecture
+## System Architecture
 
 ### Multi-Agent LangGraph Orchestration
 The core of the system is an autonomous multi-agent graph powered by **LangGraph**. It routes user requests, retrieves context, writes python visualization code, and synthesizes final answers.
@@ -50,11 +50,11 @@ graph TB
 
 ## ✨ Features
 
-- **📂 Non-blocking Async PDF Upload**: Drag & Drop financial reports; parsed asynchronously using background tasks.
-- **🧠 LangGraph Multi-Agent Router**: Dynamically routes requests based on user intent (e.g., plain Q&A vs. data visualization).
-- **📊 Dynamic Data Visualization**: Coder agent generates code to extract JSON data blocks which React parses and renders into beautiful, interactive **Recharts** (Bar/Line charts) on the fly.
-- **⚡ High Performance Caching**: Redis-backed cache layer for fast response times.
-- **🔄 State Persistence**: PostgreSQL-backed postgres checkpointer for LangGraph agent session persistence.
+- **Non-blocking Async PDF Upload**: Drag & Drop financial reports; parsed asynchronously using background tasks.
+- **LangGraph Multi-Agent Router**: Dynamically routes requests based on user intent (e.g., plain Q&A vs. data visualization).
+- **Dynamic Data Visualization**: Coder agent generates code to extract JSON data blocks which React parses and renders into beautiful, interactive **Recharts** (Bar/Line charts) on the fly.
+- **High Performance Caching**: Redis-backed cache layer for fast response times.
+- **State Persistence**: PostgreSQL-backed postgres checkpointer for LangGraph agent session persistence.
 
 ---
 
