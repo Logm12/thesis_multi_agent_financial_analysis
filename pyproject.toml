@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "thesis-financial-analyzer"
+version = "0.1.0"
+description = "Hệ thống Multi-Agent phân tích Báo cáo tài chính"
+authors = [
+    { name = "User" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "ftfy>=6.2.0",
+    "regex>=2024.5.15",
+    "pytesseract>=0.3.10",
+    "google-genai>=0.1.0",
+    "langsmith>=0.1.0",
+    "python-dotenv>=1.0.0",
+    "langchain-ollama>=0.1.0",
+    "pydantic>=2.0.0",
+    "pymupdf>=1.24.0"
+]
+# Ghi chú: docling được xem là thành phần optional/manual vì dung lượng dependencies Pytorch có thể > 2.5GB. Xin tự cài bằng tay `pip install docling`.
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "mypy",
+    "ruff"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]

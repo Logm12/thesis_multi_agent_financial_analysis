@@ -1,0 +1,122 @@
+[
+  {
+    "id": "TC_001",
+    "category": "Basic_Retrieval",
+    "question": "Công ty Cổ phần Sữa Việt Nam có mã chứng khoán là gì?",
+    "ground_truth": "Mã chứng khoán của Công ty Cổ phần Sữa Việt Nam là VNM."
+  },
+  {
+    "id": "TC_002",
+    "category": "Basic_Retrieval",
+    "question": "Ngành nghề kinh doanh chính của Vinamilk là gì?",
+    "ground_truth": "Ngành nghề kinh doanh chính là sản xuất, buôn bán sữa và các chế phẩm từ sữa."
+  },
+  {
+    "id": "TC_003",
+    "category": "Basic_Retrieval",
+    "question": "Tầm nhìn của công ty FPT đến năm 2030 là gì?",
+    "ground_truth": "Tầm nhìn của FPT là trở thành tập đoàn công nghệ số toàn cầu."
+  },
+  {
+    "id": "TC_004",
+    "category": "Basic_Retrieval",
+    "question": "Ai là Chủ tịch Hội đồng Quản trị của VNM trong năm 2023?",
+    "ground_truth": "Chủ tịch HĐQT của Vinamilk năm 2023 là bà Lê Thị Băng Tâm."
+  },
+  {
+    "id": "TC_005",
+    "category": "Basic_Retrieval",
+    "question": "Vốn điều lệ của công ty tính đến cuối năm 2023 là bao nhiêu?",
+    "ground_truth": "Vốn điều lệ của công ty tại thời điểm 31/12/2023 là 20.899 tỷ đồng."
+  },
+  {
+    "id": "TC_006",
+    "category": "Table_Extraction",
+    "question": "Doanh thu thuần hợp nhất năm 2023 của Vinamilk là bao nhiêu?",
+    "ground_truth": "Doanh thu thuần hợp nhất năm 2023 của Vinamilk là 60.369 tỷ đồng."
+  },
+  {
+    "id": "TC_007",
+    "category": "Table_Extraction",
+    "question": "Lợi nhuận gộp từ bán hàng và cung cấp dịch vụ năm 2023 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận gộp năm 2023 đạt 24.571 tỷ đồng."
+  },
+  {
+    "id": "TC_008",
+    "category": "Table_Extraction",
+    "question": "Chi phí bán hàng của công ty trong quý 4 năm 2023 là bao nhiêu?",
+    "ground_truth": "Chi phí bán hàng trong quý 4/2023 là 3.120 tỷ đồng."
+  },
+  {
+    "id": "TC_009",
+    "category": "Table_Extraction",
+    "question": "Tiền và các khoản tương đương tiền cuối kỳ của năm 2023 là bao nhiêu?",
+    "ground_truth": "Tiền và các khoản tương đương tiền cuối kỳ đạt 2.560 tỷ đồng."
+  },
+  {
+    "id": "TC_010",
+    "category": "Table_Extraction",
+    "question": "Tổng tài sản ngắn hạn tính đến 31/12/2023 là bao nhiêu?",
+    "ground_truth": "Tổng tài sản ngắn hạn đạt 35.800 tỷ đồng."
+  },
+  {
+    "id": "TC_011",
+    "category": "Table_Extraction",
+    "question": "Thu nhập trên mỗi cổ phiếu (EPS) cơ bản năm 2023 là bao nhiêu?",
+    "ground_truth": "EPS cơ bản năm 2023 là 3.800 đồng/cổ phiếu."
+  },
+  {
+    "id": "TC_012",
+    "category": "Table_Extraction",
+    "question": "Chi phí thuế thu nhập doanh nghiệp hiện hành năm 2023?",
+    "ground_truth": "Chi phí thuế thu nhập doanh nghiệp hiện hành là 1.850 tỷ đồng."
+  },
+  {
+    "id": "TC_013",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tỷ suất biên lợi nhuận gộp (Gross Margin) của năm 2023?",
+    "ground_truth": "Biên lợi nhuận gộp năm 2023 là 40.7% (24.571 / 60.369 * 100)."
+  },
+  {
+    "id": "TC_014",
+    "category": "Multi_Step_Reasoning",
+    "question": "Doanh thu thuần năm 2023 tăng hay giảm bao nhiêu phần trăm so với năm 2022 (năm 2022 là 59.956 tỷ đồng)?",
+    "ground_truth": "Doanh thu thuần năm 2023 tăng 0.68% so với năm 2022."
+  },
+  {
+    "id": "TC_015",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tỷ số thanh toán hiện hành (Current Ratio) cuối năm 2023, biết Nợ ngắn hạn là 18.200 tỷ đồng?",
+    "ground_truth": "Tỷ số thanh toán hiện hành là 1.96 (35.800 / 18.200)."
+  },
+  {
+    "id": "TC_016",
+    "category": "Multi_Step_Reasoning",
+    "question": "Lợi nhuận sau thuế năm 2023 chiếm bao nhiêu phần trăm trong tổng doanh thu thuần?",
+    "ground_truth": "Lợi nhuận sau thuế (giả sử 9.019 tỷ đồng) chiếm 14.9% tổng doanh thu thuần (60.369 tỷ đồng)."
+  },
+  {
+    "id": "TC_017",
+    "category": "Multi_Step_Reasoning",
+    "question": "So sánh chi phí quản lý doanh nghiệp và chi phí bán hàng, khoản nào lớn hơn và lớn hơn bao nhiêu trong năm 2023?",
+    "ground_truth": "Chi phí bán hàng lớn hơn chi phí quản lý doanh nghiệp."
+  },
+  {
+    "id": "TC_018",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tỷ suất sinh lời trên tổng tài sản (ROA) năm 2023, biết tổng tài sản bình quân là 50.000 tỷ đồng và LNST là 9.019 tỷ đồng?",
+    "ground_truth": "ROA năm 2023 là 18.0% (9.019 / 50.000 * 100)."
+  },
+  {
+    "id": "TC_019",
+    "category": "Multi_Step_Reasoning",
+    "question": "Sự chênh lệch giữa tỷ giá hối đoái đã ảnh hưởng như thế nào đến lợi nhuận tài chính của doanh nghiệp?",
+    "ground_truth": "Biến động tỷ giá làm tăng chi phí tài chính, dẫn đến giảm lợi nhuận từ hoạt động tài chính."
+  },
+  {
+    "id": "TC_020",
+    "category": "Multi_Step_Reasoning",
+    "question": "Vẽ biểu đồ hình tròn thể hiện cơ cấu tài sản (Tài sản ngắn hạn và Tài sản dài hạn) năm 2023.",
+    "ground_truth": "Hệ thống phải sinh ra mã Python để vẽ biểu đồ tròn và trả về kết quả hình ảnh, kèm theo giải thích cơ cấu tài sản."
+  }
+]

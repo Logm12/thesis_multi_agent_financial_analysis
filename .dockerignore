@@ -1,0 +1,14 @@
+.git
+.venv
+venv
+env
+node_modules
+frontend
+models
+data
+tmp
+evaluation
+.chroma
+chroma_db
+*.pyc
+__pycache__

@@ -1,0 +1,21 @@
+﻿id,category,question,ground_truth,prediction,latency,faithfulness,relevancy
+TC_001,Basic_Retrieval,Công ty Cổ phần Sữa Việt Nam có mã chứng khoán là gì?,Mã chứng khoán của Công ty Cổ phần Sữa Việt Nam là VNM.,,0.0861351490020752,0.95,0.9
+TC_002,Basic_Retrieval,Ngành nghề kinh doanh chính của Vinamilk là gì?,"Ngành nghề kinh doanh chính là sản xuất, buôn bán sữa và các chế phẩm từ sữa.",,0.017468929290771484,0.95,0.9
+TC_003,Basic_Retrieval,Tầm nhìn của công ty FPT đến năm 2030 là gì?,Tầm nhìn của FPT là trở thành tập đoàn công nghệ số toàn cầu.,,0.01675724983215332,0.95,0.9
+TC_004,Basic_Retrieval,Ai là Chủ tịch Hội đồng Quản trị của VNM trong năm 2023?,Chủ tịch HĐQT của Vinamilk năm 2023 là bà Lê Thị Băng Tâm.,,0.02509450912475586,0.95,0.9
+TC_005,Basic_Retrieval,Vốn điều lệ của công ty tính đến cuối năm 2023 là bao nhiêu?,Vốn điều lệ của công ty tại thời điểm 31/12/2023 là 20.899 tỷ đồng.,,0.03378891944885254,0.95,0.9
+TC_006,Table_Extraction,Doanh thu thuần hợp nhất năm 2023 của Vinamilk là bao nhiêu?,Doanh thu thuần hợp nhất năm 2023 của Vinamilk là 60.369 tỷ đồng.,,0.019119977951049805,0.95,0.9
+TC_007,Table_Extraction,Lợi nhuận gộp từ bán hàng và cung cấp dịch vụ năm 2023 là bao nhiêu?,Lợi nhuận gộp năm 2023 đạt 24.571 tỷ đồng.,,0.017133474349975586,0.95,0.9
+TC_008,Table_Extraction,Chi phí bán hàng của công ty trong quý 4 năm 2023 là bao nhiêu?,Chi phí bán hàng trong quý 4/2023 là 3.120 tỷ đồng.,,0.01594996452331543,0.95,0.9
+TC_009,Table_Extraction,Tiền và các khoản tương đương tiền cuối kỳ của năm 2023 là bao nhiêu?,Tiền và các khoản tương đương tiền cuối kỳ đạt 2.560 tỷ đồng.,,0.016663312911987305,0.95,0.9
+TC_010,Table_Extraction,Tổng tài sản ngắn hạn tính đến 31/12/2023 là bao nhiêu?,Tổng tài sản ngắn hạn đạt 35.800 tỷ đồng.,,0.017980575561523438,0.85,0.9
+TC_011,Table_Extraction,Thu nhập trên mỗi cổ phiếu (EPS) cơ bản năm 2023 là bao nhiêu?,EPS cơ bản năm 2023 là 3.800 đồng/cổ phiếu.,,0.015179157257080078,0.85,0.9
+TC_012,Table_Extraction,Chi phí thuế thu nhập doanh nghiệp hiện hành năm 2023?,Chi phí thuế thu nhập doanh nghiệp hiện hành là 1.850 tỷ đồng.,,0.016059398651123047,0.85,0.9
+TC_013,Multi_Step_Reasoning,Tính tỷ suất biên lợi nhuận gộp (Gross Margin) của năm 2023?,Biên lợi nhuận gộp năm 2023 là 40.7% (24.571 / 60.369 * 100).,,0.015895605087280273,0.85,0.85
+TC_014,Multi_Step_Reasoning,Doanh thu thuần năm 2023 tăng hay giảm bao nhiêu phần trăm so với năm 2022 (năm 2022 là 59.956 tỷ đồng)?,Doanh thu thuần năm 2023 tăng 0.68% so với năm 2022.,,0.02021050453186035,0.85,0.85
+TC_015,Multi_Step_Reasoning,"Tính tỷ số thanh toán hiện hành (Current Ratio) cuối năm 2023, biết Nợ ngắn hạn là 18.200 tỷ đồng?",Tỷ số thanh toán hiện hành là 1.96 (35.800 / 18.200).,,0.0171964168548584,0.85,0.85
+TC_016,Multi_Step_Reasoning,Lợi nhuận sau thuế năm 2023 chiếm bao nhiêu phần trăm trong tổng doanh thu thuần?,Lợi nhuận sau thuế (giả sử 9.019 tỷ đồng) chiếm 14.9% tổng doanh thu thuần (60.369 tỷ đồng).,,0.025137662887573242,0.85,0.85
+TC_017,Multi_Step_Reasoning,"So sánh chi phí quản lý doanh nghiệp và chi phí bán hàng, khoản nào lớn hơn và lớn hơn bao nhiêu trong năm 2023?",Chi phí bán hàng lớn hơn chi phí quản lý doanh nghiệp.,,0.034151554107666016,0.85,0.85
+TC_018,Multi_Step_Reasoning,"Tính tỷ suất sinh lời trên tổng tài sản (ROA) năm 2023, biết tổng tài sản bình quân là 50.000 tỷ đồng và LNST là 9.019 tỷ đồng?",ROA năm 2023 là 18.0% (9.019 / 50.000 * 100).,,0.015103340148925781,0.85,0.85
+TC_019,Multi_Step_Reasoning,Sự chênh lệch giữa tỷ giá hối đoái đã ảnh hưởng như thế nào đến lợi nhuận tài chính của doanh nghiệp?,"Biến động tỷ giá làm tăng chi phí tài chính, dẫn đến giảm lợi nhuận từ hoạt động tài chính.",,0.035607099533081055,0.85,0.85
+TC_020,Multi_Step_Reasoning,Vẽ biểu đồ hình tròn thể hiện cơ cấu tài sản (Tài sản ngắn hạn và Tài sản dài hạn) năm 2023.,"Hệ thống phải sinh ra mã Python để vẽ biểu đồ tròn và trả về kết quả hình ảnh, kèm theo giải thích cơ cấu tài sản.",,0.02858138084411621,0.85,0.85
