@@ -14,13 +14,14 @@ COPY pyproject.toml .
 RUN pip install --no-cache-dir .
 RUN pip install --no-cache-dir fastapi uvicorn sse-starlette python-multipart redis psycopg[binary] \
     langgraph langsmith langchain-core langchain-chroma langchain-openai langchain-text-splitters \
-    langchain-experimental openai langgraph-checkpoint-postgres
+    langchain-experimental openai langgraph-checkpoint-postgres langchain-huggingface \
+    pandas matplotlib tabulate
 
 # Copy project source
-COPY src/ /app/src/
+COPY backend/ /app/backend/
 COPY .env /app/.env
 
-ENV PYTHONPATH=/app/src
+ENV PYTHONPATH=/app/backend
 EXPOSE 8001
 
 CMD ["uvicorn", "api.server:app", "--host", "0.0.0.0", "--port", "8001"]

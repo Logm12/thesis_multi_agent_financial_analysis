@@ -7,7 +7,7 @@ project_root = str(Path(__file__).parent.parent.absolute())
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.data_processing.chunker import process_markdown_file
+from backend.data_processing.chunker import process_markdown_file
 try:
     from falkordb import FalkorDB
 except ImportError:

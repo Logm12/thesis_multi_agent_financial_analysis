@@ -1,0 +1,152 @@
+{
+  "ROE": {
+    "formula": "Net Income / Total Equity",
+    "description": "Lợi nhuận trên vốn chủ sở hữu",
+    "variables": ["Lợi nhuận sau thuế", "Vốn chủ sở hữu"]
+  },
+  "ROA": {
+    "formula": "Net Income / Total Assets",
+    "description": "Lợi nhuận trên tổng tài sản",
+    "variables": ["Lợi nhuận sau thuế", "Tổng tài sản"]
+  },
+  "ROS": {
+    "formula": "Net Income / Net Revenue",
+    "description": "Tỷ suất lợi nhuận trên doanh thu",
+    "variables": ["Lợi nhuận sau thuế", "Doanh thu thuần"]
+  },
+  "Gross Margin": {
+    "formula": "Gross Profit / Net Revenue",
+    "description": "Biên lợi nhuận gộp",
+    "variables": ["Lợi nhuận gộp", "Doanh thu thuần"]
+  },
+  "Net Margin": {
+    "formula": "Net Income / Net Revenue",
+    "description": "Biên lợi nhuận ròng",
+    "variables": ["Lợi nhuận sau thuế", "Doanh thu thuần"]
+  },
+  "Operating Margin": {
+    "formula": "Operating Income / Net Revenue",
+    "description": "Biên lợi nhuận hoạt động",
+    "variables": ["Lợi nhuận từ hoạt động kinh doanh", "Doanh thu thuần"]
+  },
+  "EPS": {
+    "formula": "(Net Income - Preferred Dividends) / Outstanding Shares",
+    "description": "Thu nhập trên mỗi cổ phần",
+    "variables": ["Lợi nhuận sau thuế", "Cổ tức ưu đãi", "Số cổ phiếu đang lưu hành"]
+  },
+  "PE": {
+    "formula": "Market Price / EPS",
+    "description": "Hệ số giá trên thu nhập mỗi cổ phần",
+    "variables": ["Giá thị trường cổ phiếu", "Thu nhập trên mỗi cổ phần"]
+  },
+  "PB": {
+    "formula": "Market Price / Book Value Per Share",
+    "description": "Hệ số giá trên giá trị sổ sách",
+    "variables": ["Giá thị trường cổ phiếu", "Giá trị sổ sách của mỗi cổ phần"]
+  },
+  "Current Ratio": {
+    "formula": "Current Assets / Current Liabilities",
+    "description": "Hệ số thanh toán hiện hành",
+    "variables": ["Tài sản ngắn hạn", "Nợ ngắn hạn"]
+  },
+  "Quick Ratio": {
+    "formula": "(Current Assets - Inventory) / Current Liabilities",
+    "description": "Hệ số thanh toán nhanh",
+    "variables": ["Tài sản ngắn hạn", "Hàng tồn kho", "Nợ ngắn hạn"]
+  },
+  "Cash Ratio": {
+    "formula": "(Cash + Cash Equivalents) / Current Liabilities",
+    "description": "Hệ số thanh toán bằng tiền",
+    "variables": ["Tiền và các khoản tương đương tiền", "Nợ ngắn hạn"]
+  },
+  "Debt to Equity": {
+    "formula": "Total Liabilities / Total Equity",
+    "description": "Hệ số nợ trên vốn chủ sở hữu",
+    "variables": ["Tổng nợ phải trả", "Vốn chủ sở hữu"]
+  },
+  "Debt to Assets": {
+    "formula": "Total Liabilities / Total Assets",
+    "description": "Hệ số nợ trên tổng tài sản",
+    "variables": ["Tổng nợ phải trả", "Tổng tài sản"]
+  },
+  "Financial Leverage": {
+    "formula": "Average Total Assets / Average Equity",
+    "description": "Đòn bẩy tài chính",
+    "variables": ["Tổng tài sản", "Vốn chủ sở hữu"]
+  },
+  "Asset Turnover": {
+    "formula": "Net Revenue / Average Total Assets",
+    "description": "Vòng quay tổng tài sản",
+    "variables": ["Doanh thu thuần", "Tổng tài sản"]
+  },
+  "Inventory Turnover": {
+    "formula": "Cost of Goods Sold / Average Inventory",
+    "description": "Vòng quay hàng tồn kho",
+    "variables": ["Giá vốn hàng bán", "Hàng tồn kho"]
+  },
+  "Receivables Turnover": {
+    "formula": "Net Credit Sales / Average Accounts Receivable",
+    "description": "Vòng quay khoản phải thu",
+    "variables": ["Doanh thu thuần", "Các khoản phải thu"]
+  },
+  "Payables Turnover": {
+    "formula": "Cost of Goods Sold / Average Accounts Payable",
+    "description": "Vòng quay khoản phải trả",
+    "variables": ["Giá vốn hàng bán", "Phải trả người bán"]
+  },
+  "Days Inventory Outstanding": {
+    "formula": "365 / Inventory Turnover",
+    "description": "Số ngày tồn kho bình quân",
+    "variables": ["Vòng quay hàng tồn kho"]
+  },
+  "Days Sales Outstanding": {
+    "formula": "365 / Receivables Turnover",
+    "description": "Số ngày thu tiền bình quân",
+    "variables": ["Vòng quay khoản phải thu"]
+  },
+  "Days Payable Outstanding": {
+    "formula": "365 / Payables Turnover",
+    "description": "Số ngày thanh toán bình quân",
+    "variables": ["Vòng quay khoản phải trả"]
+  },
+  "Cash Conversion Cycle": {
+    "formula": "Days Inventory Outstanding + Days Sales Outstanding - Days Payable Outstanding",
+    "description": "Chu kỳ chuyển đổi tiền",
+    "variables": ["Số ngày tồn kho bình quân", "Số ngày thu tiền bình quân", "Số ngày thanh toán bình quân"]
+  },
+  "Interest Coverage Ratio": {
+    "formula": "EBIT / Interest Expense",
+    "description": "Hệ số khả năng thanh toán lãi vay",
+    "variables": ["Lợi nhuận trước thuế và lãi vay", "Chi phí lãi vay"]
+  },
+  "EBIT": {
+    "formula": "Net Income + Interest Expense + Tax Expense",
+    "description": "Lợi nhuận trước thuế và lãi vay",
+    "variables": ["Lợi nhuận sau thuế", "Chi phí lãi vay", "Chi phí thuế TNDN"]
+  },
+  "EBITDA": {
+    "formula": "EBIT + Depreciation and Amortization",
+    "description": "Lợi nhuận trước thuế, lãi vay và khấu hao",
+    "variables": ["Lợi nhuận trước thuế và lãi vay", "Khấu hao tài sản cố định"]
+  },
+  "Free Cash Flow": {
+    "formula": "Operating Cash Flow - Capital Expenditures",
+    "description": "Dòng tiền tự do",
+    "variables": ["Dòng tiền từ hoạt động kinh doanh", "Chi mua sắm tài sản cố định"]
+  },
+  "Debt-to-Capital Ratio": {
+    "formula": "Total Debt / (Total Debt + Total Equity)",
+    "description": "Hệ số nợ trên tổng nguồn vốn",
+    "variables": ["Tổng nợ phải trả", "Vốn chủ sở hữu"]
+  },
+  "Equity Multiplier": {
+    "formula": "Total Assets / Total Equity",
+    "description": "Hệ số nhân vốn chủ sở hữu",
+    "variables": ["Tổng tài sản", "Vốn chủ sở hữu"]
+  },
+  "Book Value Per Share": {
+    "formula": "(Total Equity - Preferred Equity) / Outstanding Shares",
+    "description": "Giá trị sổ sách trên mỗi cổ phiếu",
+    "variables": ["Vốn chủ sở hữu", "Cổ tức ưu đãi", "Số cổ phiếu đang lưu hành"]
+  }
+}

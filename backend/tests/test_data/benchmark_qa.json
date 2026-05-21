@@ -1,0 +1,62 @@
+[
+  {
+    "id": "TC_001",
+    "category": "Basic_Retrieval",
+    "question": "Công ty Cổ phần Sữa Việt Nam có mã chứng khoán là gì?",
+    "ground_truth": "Mã chứng khoán của Công ty Cổ phần Sữa Việt Nam là VNM."
+  },
+  {
+    "id": "TC_002",
+    "category": "Basic_Retrieval",
+    "question": "Ngành nghề kinh doanh chính của Vinamilk là gì?",
+    "ground_truth": "Ngành nghề kinh doanh chính là sản xuất, buôn bán sữa và các chế phẩm từ sữa."
+  },
+  {
+    "id": "TC_003",
+    "category": "Basic_Retrieval",
+    "question": "Tầm nhìn của công ty FPT đến năm 2030 là gì?",
+    "ground_truth": "Tầm nhìn của FPT là trở thành tập đoàn công nghệ số toàn cầu."
+  },
+  {
+    "id": "TC_004",
+    "category": "Basic_Retrieval",
+    "question": "Ai là Chủ tịch Hội đồng Quản trị của VNM trong năm 2023?",
+    "ground_truth": "Chủ tịch HĐQT của Vinamilk năm 2023 là bà Lê Thị Băng Tâm."
+  },
+  {
+    "id": "TC_005",
+    "category": "Basic_Retrieval",
+    "question": "Vốn điều lệ của công ty tính đến cuối năm 2023 là bao nhiêu?",
+    "ground_truth": "Vốn điều lệ của công ty tại thời điểm 31/12/2023 là 20.899 tỷ đồng."
+  },
+  {
+    "id": "TC_006",
+    "category": "Table_Extraction",
+    "question": "Doanh thu thuần hợp nhất năm 2023 của Vinamilk là bao nhiêu?",
+    "ground_truth": "Doanh thu thuần hợp nhất năm 2023 của Vinamilk là 60.369 tỷ đồng."
+  },
+  {
+    "id": "TC_007",
+    "category": "Table_Extraction",
+    "question": "Lợi nhuận gộp từ bán hàng và cung cấp dịch vụ năm 2023 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận gộp năm 2023 đạt 24.571 tỷ đồng."
+  },
+  {
+    "id": "TC_008",
+    "category": "Table_Extraction",
+    "question": "Chi phí bán hàng của công ty trong quý 4 năm 2023 là bao nhiêu?",
+    "ground_truth": "Chi phí bán hàng trong quý 4/2023 là 3.120 tỷ đồng."
+  },
+  {
+    "id": "TC_009",
+    "category": "Table_Extraction",
+    "question": "Tiền và các khoản tương đương tiền cuối kỳ của năm 2023 là bao nhiêu?",
+    "ground_truth": "Tiền và các khoản tương đương tiền cuối kỳ đạt 2.560 tỷ đồng."
+  },
+  {
+    "id": "TC_010",
+    "category": "Table_Extraction",
+    "question": "Tổng tài sản ngắn hạn tính đến 31/12/2023 là bao nhiêu?",
+    "ground_truth": "Tổng tài sản ngắn hạn đạt 35.800 tỷ đồng."
+  }
+]

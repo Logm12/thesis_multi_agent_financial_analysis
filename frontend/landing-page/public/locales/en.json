@@ -1,0 +1,89 @@
+{
+  "navbar": {
+    "brand": "Lumo Thesis",
+    "home": "Home",
+    "features": "Features",
+    "security": "Security",
+    "methodology": "Methodology",
+    "language": "Language"
+  },
+  "hero": {
+    "title": "AI-Powered Financial Intelligence",
+    "subtitle": "Secure academic SaaS platform supporting advanced enterprise-grade financial analysis via local Multi-Agent AI.",
+    "cta": "Experience Now!",
+    "badge": "Academic Graduation Thesis"
+  },
+  "security": {
+    "title": "Absolute Secure Local Processing",
+    "subtitle": "Your data never leaves your server",
+    "usp_text": "Your data never leaves your server. All computation, vector extraction, and language inference happen entirely offline within your infrastructure.",
+    "features": {
+      "local_llm": "Local LLM Inference",
+      "no_cloud": "No Cloud Sync",
+      "audit": "Open Source Auditing"
+    }
+  },
+  "methodology": {
+    "title": "Transparency & RAGAS Matrix",
+    "subtitle": "Measuring answer quality through the international RAGAS evaluation framework.",
+    "faithfulness": "Faithfulness",
+    "relevancy": "Answer Relevancy",
+    "case_studies": {
+      "title": "Real-world Case Studies",
+      "retail": "Retail Industry",
+      "retail_desc": "Analyzing WinCommerce net profit margin growth in 2023.",
+      "banking": "Banking Sector",
+      "banking_desc": "Evaluating Techcombank's Non-Performing Loan (NPL) and CAR ratio across 4 quarters.",
+      "tech": "Technology",
+      "tech_desc": "Synthesizing Cloud & Software segment revenue for FPT Software."
+    },
+    "agent_steps": {
+      "title": "Agent Processing Workflow",
+      "step1_title": "1. Routing & Intent",
+      "step1_desc": "Agent analyzes user prompt to determine whether code calculation or data retrieval is required.",
+      "step2_title": "2. Semantic Retrieval",
+      "step2_desc": "Uses local Vector DB to extract the most relevant text chunks from enterprise PDF reports.",
+      "step3_title": "3. Python Computation",
+      "step3_desc": "Automatically generates Pandas/Python scripts to compute complex metrics like CAGR, ROE, and ROI.",
+      "step4_title": "4. Synthesis & Verification",
+      "step4_desc": "Synthesizes final response backed by strictly accurate document-referenced sources."
+    }
+  },
+  "visualizer": {
+    "title": "Multi-Agent Workflow Visualizer",
+    "subtitle": "Real-time simulation of thought trace and coordination among multiple AI Agents.",
+    "placeholder": "[ Animation GIF area demonstrating Agent thought process ]"
+  },
+  "demo": {
+    "chat_title": "Interactive Demo Chat",
+    "chat_subtitle": "Question FPT Online 2025 Financial Report (Predefined Context)",
+    "placeholder": "Ask a financial question (e.g., 'What is the revenue for Q3 2025?')",
+    "btn_send": "Ask Agent",
+    "quota_left": "Quota remaining",
+    "quota_limit": "No free questions left. Please login to continue.",
+    "agent_thinking": "Agent is thinking...",
+    "step_routing": "Planner is mapping execution steps...",
+    "step_retriever": "Retriever is extracting financial data...",
+    "step_coder": "Coder is computing metrics via Python...",
+    "step_synthesizer": "Synthesizer is writing final summary...",
+    "step_default": "Processing node...",
+    "upload_locked": "Upload is disabled for guests.",
+    "upload_tooltip": "Please login to upload your custom PDFs."
+  },
+  "auth": {
+    "login_title": "Welcome Back",
+    "login_subtitle": "Enter your credentials to unlock full enterprise-grade analyzer capabilities.",
+    "username": "Username / Email",
+    "password": "Password",
+    "btn_login": "Sign In",
+    "btn_back": "Back to Home",
+    "login_warning": "You must log in to access this secure resource."
+  },
+  "footer": {
+    "copyright": "© 2026 Lumo AI. Academic University Thesis in Data Science."
+  },
+  "meta": {
+    "title": "Lumo AI - Multi-Agent Financial Analyzer",
+    "description": "Academic SaaS platform for secure enterprise-level financial report analysis with local processing."
+  }
+}

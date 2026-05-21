@@ -1,9 +1,16 @@
-import React from 'react';
-import { Sparkles, User, AlertCircle, Loader2 } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import {
+  Sparkles, User, AlertCircle, Download, Maximize2, X,
+  ChevronDown, ChevronRight, BarChart3,
+} from 'lucide-react';
 import type { Message } from '../types/chat';
 import DynamicChart from './DynamicChart';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useChatStore } from '../store/useChatStore';
+import apiClient from '../api/client';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -13,40 +20,352 @@ interface MessageBubbleProps {
   message: Message;
 }
 
+/* ─── Shimmer Skeleton shown while isSystem + no text ────────── */
+const ShimmerSkeleton = () => (
+  <div className="flex flex-col gap-2.5 w-full py-1">
+    <div className="shimmer h-3.5 w-3/4" />
+    <div className="shimmer h-3.5 w-full" />
+    <div className="shimmer h-3.5 w-5/6" />
+    <div className="shimmer h-3.5 w-2/3" />
+    <div className="shimmer h-3.5 w-4/5 mt-1" />
+    <div className="shimmer h-3.5 w-3/5" />
+  </div>
+);
+
+/* ─── Chart container with Export + Fullscreen ───────────────── */
+const ChartCard: React.FC<{ src: string; label?: string }> = ({ src, label }) => {
+  const [fullscreen, setFullscreen] = useState(false);
+
+  const handleExport = useCallback(async () => {
+    const a = document.createElement('a');
+    a.href = src;
+    a.download = `lumo-chart-${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }, [src]);
+
+  return (
+    <>
+      <div className="chart-container mt-4 w-full group">
+        {/* chart action buttons — visible on hover */}
+        <div className="chart-actions">
+          <button className="chart-action-btn" onClick={handleExport} title="Tải xuống biểu đồ">
+            <Download className="w-3 h-3" />
+            Export Data
+          </button>
+          <button className="chart-action-btn" onClick={() => setFullscreen(true)} title="Xem toàn màn hình">
+            <Maximize2 className="w-3 h-3" />
+            Full Screen
+          </button>
+        </div>
+
+        {/* header strip */}
+        <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-slate-100 bg-slate-50">
+          <BarChart3 className="w-3.5 h-3.5 text-indigo-500" />
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+            {label || 'Tự động vẽ bởi Python Coder Agent'}
+          </span>
+        </div>
+
+        <img
+          src={src}
+          alt="AI Generated Chart"
+          className="w-full h-auto object-contain p-3"
+          onError={(e) => ((e.currentTarget.parentElement as HTMLElement).style.display = 'none')}
+        />
+      </div>
+
+      {/* Fullscreen overlay */}
+      {fullscreen && (
+        <div className="fullscreen-overlay" onClick={() => setFullscreen(false)}>
+          <div
+            className="relative max-w-5xl w-full px-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setFullscreen(false)}
+              className="absolute -top-3 -right-3 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors z-10 backdrop-blur"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <img
+              src={src}
+              alt="Chart – Full Screen"
+              className="w-full h-auto object-contain rounded-2xl shadow-2xl border border-white/10"
+            />
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+/* ─── Main component ─────────────────────────────────────────── */
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+  const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api/v1').replace('/api/v1', '');
+  const [stepsOpen, setStepsOpen] = useState(!message.text);
+
+  const processedText = message.text
+    ? message.text
+        .replace(/\[Trang\s*(\d+)(?:,\s*([^\]]+))?\]/gi, (_match, pageNum, docRef) => {
+          const ref = docRef ? docRef.trim().replace(/\s+/g, '_') : 'active';
+          return `[Trang ${pageNum}${docRef ? `, ${docRef.trim()}` : ''}](#citation-page_${pageNum}_doc_${ref})`;
+        })
+        .replace(/\[(\d+)\]/g, '[citation:$1](#citation-$1)')
+    : '';
+
+  /* Detect if a table cell looks numeric to apply right-alignment */
+  const isNumericCell = (text: string): boolean => {
+    const cleaned = text.replace(/[,%\s]/g, '').replace(/\((.+)\)/, '-$1');
+    return !isNaN(Number(cleaned)) && cleaned.trim() !== '';
+  };
+
+  const markdownComponents = React.useMemo(() => ({
+    a: ({ node, ...props }: any) => {
+      if (props.href?.startsWith('#citation-')) {
+        const citation = props.href.split('-')[1];
+
+        if (citation.startsWith('page_')) {
+          const parts = citation.split('_');
+          const pageNum = parseInt(parts[1], 10);
+          const docRef = parts[3] && parts[3] !== 'active' ? parts[3].replace(/_/g, ' ') : undefined;
+
+          const handleVisualGroundingClick = async () => {
+            const { activePdfId, setActivePdf, setActivePage, setHighlightedBbox } = useChatStore.getState();
+            let pdfId = activePdfId;
+
+            if (docRef) {
+              try {
+                const docsRes = await apiClient.get('/documents');
+                const matched = docsRes.data.find((d: any) =>
+                  d.name.toLowerCase().includes(docRef.toLowerCase()) ||
+                  docRef.toLowerCase().includes(d.name.toLowerCase())
+                );
+                if (matched) { pdfId = matched.id; setActivePdf(matched.id); }
+              } catch (e) { console.error('Error selecting citation document:', e); }
+            }
+
+            if (!pdfId) return;
+            setActivePage(pageNum);
+
+            try {
+              const blocksRes = await apiClient.get(`/documents/${pdfId}/blocks`);
+              const pageBlocks = blocksRes.data.filter((b: any) => b.page === pageNum);
+              if (pageBlocks.length > 0) {
+                const targetBlock = pageBlocks.find((b: any) => b.text && b.text.trim().length > 15) || pageBlocks[0];
+                setHighlightedBbox(JSON.stringify({ bbox: targetBlock.bbox, page: pageNum }));
+              }
+            } catch (e) { console.error('Error fetching blocks:', e); }
+          };
+
+          return (
+            <span
+              onClick={handleVisualGroundingClick}
+              className="inline-flex items-center gap-1 px-2 py-0.5 mx-0.5 text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-md cursor-pointer hover:bg-indigo-100 hover:border-indigo-400 transition-all select-none"
+            >
+              📄 {props.children}
+            </span>
+          );
+        } else {
+          const citationNum = parseInt(citation, 10);
+          const handleStandardCitationClick = async () => {
+            const { activePdfId, setActivePage, setHighlightedBbox } = useChatStore.getState();
+            if (!activePdfId) return;
+            const targetPage = (citationNum % 5) + 1;
+            setActivePage(targetPage);
+            try {
+              const blocksRes = await apiClient.get(`/documents/${activePdfId}/blocks`);
+              const pageBlocks = blocksRes.data.filter((b: any) => b.page === targetPage);
+              if (pageBlocks.length > 0) {
+                const targetBlock = pageBlocks.find((b: any) => b.text && b.text.trim().length > 15) || pageBlocks[0];
+                setHighlightedBbox(JSON.stringify({ bbox: targetBlock.bbox, page: targetPage }));
+              }
+            } catch (e) { console.error('Error standard citation click:', e); }
+          };
+
+          return (
+            <span className="relative group inline-block mx-0.5 select-none">
+              <span
+                onClick={handleStandardCitationClick}
+                className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 rounded cursor-pointer hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all"
+              >
+                {citationNum}
+              </span>
+              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-slate-900 text-white text-[11px] rounded-lg py-2 px-3 whitespace-nowrap shadow-xl z-50 pointer-events-none border border-slate-700">
+                <span className="font-semibold text-indigo-300 block mb-0.5">Nguồn [{citationNum}]</span>
+                Xem trích dẫn trực tiếp trên PDF
+              </span>
+            </span>
+          );
+        }
+      }
+      return <a {...props} className="text-indigo-600 hover:text-indigo-800 underline underline-offset-2 decoration-indigo-300" target="_blank" rel="noopener noreferrer" />;
+    },
+
+    /* ── Financial Table (Zebra + right-aligned numbers) ── */
+    table: ({ node, ...props }: any) => (
+      <div className="overflow-x-auto my-5 rounded-xl shadow-sm border border-slate-200" id="financial-data-table">
+        <table {...props} className="fin-table" />
+      </div>
+    ),
+    thead: ({ node, ...props }: any) => <thead {...props} />,
+    th: ({ node, children, ...props }: any) => {
+      const text = String(children ?? '');
+      return (
+        <th {...props} className={isNumericCell(text) ? 'num' : ''}>
+          {children}
+        </th>
+      );
+    },
+    td: ({ node, children, ...props }: any) => {
+      const text = String(children ?? '');
+      const isNum = isNumericCell(text);
+      const isPos = isNum && Number(text.replace(/[,%\s]/g, '')) > 0 && text.includes('%');
+      const isNeg = isNum && text.startsWith('-') || text.startsWith('(');
+      return (
+        <td
+          {...props}
+          className={cn(
+            isNum ? 'num' : '',
+            isPos ? 'profit' : '',
+            isNeg ? 'risk' : ''
+          )}
+        >
+          {children}
+        </td>
+      );
+    },
+    tr: ({ node, ...props }: any) => <tr {...props} />,
+
+    ul: ({ node, ...props }: any) => (
+      <ul {...props} className="list-disc pl-5 my-3 space-y-1.5 text-slate-700" />
+    ),
+    ol: ({ node, ...props }: any) => (
+      <ol {...props} className="list-decimal pl-5 my-3 space-y-1.5 text-slate-700" />
+    ),
+    li: ({ node, ...props }: any) => (
+      <li {...props} className="leading-relaxed" />
+    ),
+    h1: ({ node, ...props }: any) => (
+      <h1 {...props} className="text-lg font-bold text-slate-900 mt-4 mb-2 tracking-tight" />
+    ),
+    h2: ({ node, ...props }: any) => (
+      <h2 {...props} className="text-base font-bold text-slate-900 mt-3 mb-1.5 tracking-tight" />
+    ),
+    h3: ({ node, ...props }: any) => (
+      <h3 {...props} className="text-sm font-bold text-slate-800 mt-2.5 mb-1" />
+    ),
+    p: ({ node, ...props }: any) => (
+      <p {...props} className="leading-relaxed my-2 text-slate-700" />
+    ),
+    code: ({ node, inline, ...props }: any) =>
+      inline ? (
+        <code {...props} className="px-1.5 py-0.5 rounded bg-slate-100 text-rose-600 font-mono text-[0.8em]" />
+      ) : (
+        <code {...props} />
+      ),
+    pre: ({ node, ...props }: any) => (
+      <pre {...props} className="bg-slate-950 text-emerald-300 rounded-xl p-4 overflow-x-auto my-3 text-[0.78rem] font-mono leading-relaxed" />
+    ),
+  }), []);
+
+  /* ─── is loading shimmer ─────────────────────────────────── */
+  const isStreaming = message.isSystem && !message.text && !message.isError;
+
   return (
     <div className={cn(
-      "flex w-full mb-6 gap-4",
-      message.isUser ? "flex-row-reverse" : "flex-row"
+      'flex w-full mb-5 gap-3',
+      message.isUser ? 'flex-row-reverse' : 'flex-row'
     )}>
+      {/* Avatar */}
       <div className={cn(
-        "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
-        message.isUser ? "bg-indigo-600 text-white" : "bg-white border border-slate-200 text-primary"
+        'w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 shadow-sm',
+        message.isUser
+          ? 'bg-indigo-600 text-white shadow-indigo-200'
+          : message.isError
+            ? 'bg-rose-50 text-rose-500 border border-rose-200'
+            : 'bg-white text-indigo-600 border border-slate-200'
       )}>
-        {message.isUser ? <User className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
+        {message.isUser
+          ? <User className="w-4.5 h-4.5" />
+          : message.isError
+            ? <AlertCircle className="w-4 h-4" />
+            : <Sparkles className="w-4 h-4" />
+        }
       </div>
-      
+
       <div className={cn(
-        "max-w-[80%] flex flex-col",
-        message.isUser ? "items-end" : "items-start"
+        'flex flex-col max-w-[82%] min-w-0',
+        message.isUser ? 'items-end' : 'items-start'
       )}>
+
+        {/* ── Reasoning Steps Accordion ── */}
+        {message.steps && message.steps.length > 0 && (
+          <button
+            onClick={() => setStepsOpen(o => !o)}
+            className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 hover:text-indigo-600 mb-2 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100 hover:border-indigo-200 transition-all select-none"
+            id="reasoning-steps-toggle"
+          >
+            {stepsOpen
+              ? <ChevronDown className="w-3.5 h-3.5" />
+              : <ChevronRight className="w-3.5 h-3.5" />
+            }
+            <span className="text-indigo-500 font-bold">{message.steps.length}</span>
+            &nbsp;bước suy luận
+            {isStreaming && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse inline-block" />}
+          </button>
+        )}
+
+        {stepsOpen && message.steps && message.steps.length > 0 && (
+          <div className="mb-2 w-full border-l-2 border-indigo-400 pl-3 space-y-1 bg-slate-50/60 rounded-r-xl py-2 pr-3" id="reasoning-steps">
+            {message.steps.map((step, idx) => (
+              <div key={idx} className="flex items-start gap-2 text-[11px] text-slate-500">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 shrink-0" />
+                <span className="leading-relaxed">{step}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── Message Card ── */}
         <div className={cn(
-          "px-4 py-3 rounded-2xl text-sm leading-relaxed",
-          message.isUser 
-            ? "bg-primary text-white rounded-tr-none" 
-            : message.isSystem 
-              ? "bg-slate-100 text-slate-600 italic border border-slate-200"
-              : message.isError
-                ? "bg-red-50 text-red-600 border border-red-100"
-                : "bg-white text-slate-700 border border-slate-200 shadow-sm rounded-tl-none"
+          'w-full px-4 py-3.5 text-sm leading-relaxed shadow-sm',
+          message.isUser
+            ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-sm shadow-indigo-100'
+            : message.isError
+              ? 'bg-rose-50 text-rose-700 border border-rose-200 rounded-2xl rounded-tl-sm'
+              : 'bg-white text-slate-700 border border-slate-200 rounded-2xl rounded-tl-sm'
         )}>
-          {message.isError && <AlertCircle className="w-4 h-4 inline mr-2" />}
-          {message.isSystem && <Loader2 className="w-4 h-4 inline mr-2 animate-spin" />}
-          {message.text}
+
+          {/* Shimmer Skeleton when streaming with no text yet */}
+          {isStreaming ? (
+            <ShimmerSkeleton />
+          ) : message.isUser ? (
+            <span className="whitespace-pre-wrap">{message.text}</span>
+          ) : (
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={markdownComponents}
+            >
+              {processedText}
+            </ReactMarkdown>
+          )}
         </div>
-        
+
+        {/* ── Dynamic Chart (ECharts) ── */}
         {message.hasChart && message.chartData && (
-          <DynamicChart data={message.chartData} type={message.chartType} />
+          <div className="mt-3 w-full">
+            <DynamicChart data={message.chartData} type={message.chartType} />
+          </div>
+        )}
+
+        {/* ── AI-generated PNG Chart with Export + Fullscreen ── */}
+        {message.chartImageUrl && (
+          <ChartCard
+            src={`${apiBaseUrl}${message.chartImageUrl}`}
+            label="Biểu đồ tự động — Python Coder Agent"
+          />
         )}
       </div>
     </div>

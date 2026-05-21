@@ -12,4 +12,6 @@ export interface Message {
   chartType?: 'bar' | 'line';
   chartData?: ChartData[];
   isError?: boolean;
+  steps?: string[];
+  chartImageUrl?: string;
 }

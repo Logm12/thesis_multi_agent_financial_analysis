@@ -1,4 +1,6 @@
 node_modules
+**/node_modules
+landing-page
 dist
 dist-ssr
 *.local

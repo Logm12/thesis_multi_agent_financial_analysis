@@ -9,12 +9,25 @@ interface ChatState {
   updateMessage: (id: string, updates: Partial<Message>) => void;
   setProcessing: (val: boolean) => void;
   setLoading: (val: boolean) => void;
+  
+  // TIP-004 Layout & PDF Viewer states
+  activePdfId: string | null;
+  activePage: number;
+  highlightedBbox: string | null; // e.g. "[x0, y0, x1, y1]"
+  setActivePdf: (id: string | null) => void;
+  setActivePage: (page: number) => void;
+  setHighlightedBbox: (bbox: string | null) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
   messages: [],
   isProcessing: false,
   isLoading: false,
+  
+  // Initial PDF states
+  activePdfId: null,
+  activePage: 1,
+  highlightedBbox: null,
   
   addMessage: (msg) => {
     const id = Math.random().toString(36).substring(7);
@@ -32,4 +45,9 @@ export const useChatStore = create<ChatState>((set) => ({
   
   setProcessing: (isProcessing) => set({ isProcessing }),
   setLoading: (isLoading) => set({ isLoading }),
+  
+  // PDF setters
+  setActivePdf: (activePdfId) => set({ activePdfId, activePage: 1, highlightedBbox: null }),
+  setActivePage: (activePage) => set({ activePage }),
+  setHighlightedBbox: (highlightedBbox) => set({ highlightedBbox })
 }));

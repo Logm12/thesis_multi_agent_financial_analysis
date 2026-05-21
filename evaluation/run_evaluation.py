@@ -13,10 +13,10 @@ load_dotenv()
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
 
-# Thêm src vào path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
+# Thêm backend vào path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend")))
 
-from config import SYNTHESIZER_MODEL, EMBEDDING_MODEL
+from core.config import SYNTHESIZER_MODEL, EMBEDDING_MODEL
 
 # Khởi tạo LLM cho RAGAS
 eval_llm = ChatOpenAI(model=SYNTHESIZER_MODEL)

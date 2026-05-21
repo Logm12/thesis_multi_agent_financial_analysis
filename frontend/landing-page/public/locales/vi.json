@@ -1,0 +1,89 @@
+{
+  "navbar": {
+    "brand": "Lumo Thesis",
+    "home": "Trang chủ",
+    "features": "Tính năng",
+    "security": "Bảo mật",
+    "methodology": "Phương pháp",
+    "language": "Ngôn ngữ"
+  },
+  "hero": {
+    "title": "AI-Powered Financial Intelligence",
+    "subtitle": "Nền tảng SaaS học thuật bảo mật tuyệt đối hỗ trợ phân tích tài chính chuyên sâu cấp doanh nghiệp với Multi-Agent.",
+    "cta": "Trải nghiệm ngay!",
+    "badge": "Đồ án Tốt nghiệp Học thuật"
+  },
+  "security": {
+    "title": "Xử lý Cục bộ An toàn Tuyệt đối",
+    "subtitle": "Your data never leaves your server",
+    "usp_text": "Dữ liệu không bao giờ rời khỏi máy chủ của bạn. Mọi phép tính, trích xuất vector và suy luận ngôn ngữ đều diễn ra offline tại hạ tầng của bạn.",
+    "features": {
+      "local_llm": "Local LLM Inference",
+      "no_cloud": "Không đồng bộ Cloud",
+      "audit": "Minh bạch mã nguồn"
+    }
+  },
+  "methodology": {
+    "title": "Tính Minh bạch & RAGAS Matrix",
+    "subtitle": "Đo lường chất lượng câu trả lời của hệ thống thông qua khung đánh giá RAGAS chuẩn quốc tế.",
+    "faithfulness": "Độ trung thực (Faithfulness)",
+    "relevancy": "Độ liên quan (Answer Relevancy)",
+    "case_studies": {
+      "title": "Case Studies Thực tế",
+      "retail": "Ngành Bán lẻ",
+      "retail_desc": "Phân tích tăng trưởng biên lợi nhuận ròng của WinCommerce năm 2023.",
+      "banking": "Ngành Ngân hàng",
+      "banking_desc": "Đánh giá tỷ lệ nợ xấu (NPL) và CAR của Techcombank qua 4 quý.",
+      "tech": "Ngành Công nghệ",
+      "tech_desc": "Tổng hợp doanh thu mảng Cloud & Software của FPT Software."
+    },
+    "agent_steps": {
+      "title": "Quy trình xử lý của Agent",
+      "step1_title": "1. Routing & Intent",
+      "step1_desc": "Agent phân tích câu hỏi của người dùng để xác định xem cần tính toán logic (Code) hay truy vấn dữ liệu (Retrieve).",
+      "step2_title": "2. Semantic Retrieval",
+      "step2_desc": "Sử dụng Vector DB cục bộ trích xuất các chunk văn bản liên quan nhất từ báo cáo tài chính PDF.",
+      "step3_title": "3. Python Computation",
+      "step3_desc": "Tự động viết mã Pandas/Python để tính toán các tỷ số tài chính phức tạp như CAGR, ROE, ROI.",
+      "step4_title": "4. Synthesis & Verification",
+      "step4_desc": "Tổng hợp câu trả lời cuối cùng kèm trích dẫn nguồn dữ liệu chính xác tuyệt đối."
+    }
+  },
+  "visualizer": {
+    "title": "Multi-Agent Workflow Visualizer",
+    "subtitle": "Mô phỏng thời gian thực luồng suy nghĩ và sự phối hợp giữa các AI Agent.",
+    "placeholder": "[ Vùng hiển thị Animation GIF luồng suy nghĩ của Agent ]"
+  },
+  "demo": {
+    "chat_title": "Thử nghiệm Interactive Demo",
+    "chat_subtitle": "Truy vấn Báo cáo Tài chính FPT Online 2025 (Dữ liệu Cố định)",
+    "placeholder": "Nhập câu hỏi tài chính (Ví dụ: 'Doanh thu thuần quý 3 năm 2025 là bao nhiêu?')",
+    "btn_send": "Hỏi Agent",
+    "quota_left": "Lượt hỏi còn lại",
+    "quota_limit": "Đã hết lượt hỏi thử miễn phí. Vui lòng đăng nhập để tiếp tục.",
+    "agent_thinking": "Agent đang suy nghĩ...",
+    "step_routing": "Planner đang lên kế hoạch thực thi...",
+    "step_retriever": "Retriever đang trích xuất số liệu tài chính...",
+    "step_coder": "Coder đang tính toán chỉ số bằng Python...",
+    "step_synthesizer": "Synthesizer đang viết kết luận tổng hợp...",
+    "step_default": "Đang xử lý...",
+    "upload_locked": "Tính năng Upload đã bị khóa.",
+    "upload_tooltip": "Vui lòng đăng nhập để tải lên tài liệu PDF cá nhân."
+  },
+  "auth": {
+    "login_title": "Chào Mừng Trở Lại",
+    "login_subtitle": "Nhập tài khoản của bạn để mở khóa toàn bộ khả năng phân tích chuyên sâu doanh nghiệp.",
+    "username": "Tên tài khoản / Email",
+    "password": "Mật khẩu",
+    "btn_login": "Đăng Nhập",
+    "btn_back": "Quay về Trang chủ",
+    "login_warning": "Bạn cần đăng nhập để truy cập vào tài nguyên bảo mật này."
+  },
+  "footer": {
+    "copyright": "© 2026 Lumo AI. Đồ án Tốt nghiệp Đại học chuyên ngành Khoa học Dữ liệu."
+  },
+  "meta": {
+    "title": "Lumo AI - Hệ thống Phân tích Tài chính Multi-Agent",
+    "description": "Nền tảng SaaS Học thuật hỗ trợ phân tích báo cáo tài chính doanh nghiệp an toàn bảo mật tuyệt đối."
+  }
+}

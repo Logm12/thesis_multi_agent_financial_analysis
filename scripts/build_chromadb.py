@@ -8,8 +8,8 @@ project_root = str(Path(__file__).parent.parent.absolute())
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.data_processing.chunker import process_markdown_file
-from src.data_processing.embedder import get_vietnamese_embedding_model
+from backend.data_processing.chunker import process_markdown_file
+from backend.data_processing.embedder import get_vietnamese_embedding_model
 
 CHROMA_DB_DIR = os.path.join(project_root, "data", "chroma_db")
 PROCESSED_DATA_DIR = os.path.join(project_root, "data", "processed")

@@ -26,26 +26,50 @@ const MainContent = () => {
     }
   }, [messages, isLoading, isProcessing]);
 
-  const pollStatus = (taskId: string, messageId: string) => {
+  const pollStatus = (taskId: string | undefined, messageId: string) => {
+    if (!taskId || taskId === 'undefined') {
+      console.error('[Polling] Aborting: Invalid taskId', taskId);
+      updateMessage(messageId, {
+        text: 'Lỗi: Không nhận được mã tiến trình hợp lệ từ máy chủ.',
+        isSystem: false,
+        isError: true
+      });
+      setProcessing(false);
+      return;
+    }
+
+    let attempts = 0;
+    const maxAttempts = 30; // 60 seconds (30 * 2000ms)
+
     const interval = setInterval(async () => {
+      attempts++;
+      if (attempts > maxAttempts) {
+        clearInterval(interval);
+        updateMessage(messageId, {
+          text: 'Quá thời gian xử lý tài liệu. Vui lòng kiểm tra lại trạng thái ở Knowledge Base.',
+          isSystem: false,
+          isError: true
+        });
+        setProcessing(false);
+        return;
+      }
+
       try {
         const response = await apiClient.get(`/status/${taskId}`);
-        const { status, result } = response.data;
+        const { status, details } = response.data || {};
 
         if (status === 'completed') {
           clearInterval(interval);
           updateMessage(messageId, {
-            text: result.message,
+            text: details || 'Tài liệu đã được xử lý và đánh chỉ mục thành công.',
             isSystem: false,
-            hasChart: result.has_chart,
-            chartType: result.chart_type,
-            chartData: result.chart_data
+            hasChart: false
           });
           setProcessing(false);
         } else if (status === 'failed') {
           clearInterval(interval);
           updateMessage(messageId, {
-            text: 'Xin lỗi, quá trình xử lý tài liệu đã thất bại.',
+            text: `Xin lỗi, quá trình xử lý tài liệu đã thất bại: ${details || 'Lỗi không xác định'}`,
             isSystem: false,
             isError: true
           });
@@ -53,11 +77,36 @@ const MainContent = () => {
         }
       } catch (error) {
         console.error('Polling error:', error);
+        // Do not fail immediately on transient network error, wait for retries
       }
     }, 2000);
   };
 
   const uploadFile = async (file: File) => {
+    // Validate file extension and MIME type
+    const isPdf = file.name.toLowerCase().endsWith('.pdf') && (file.type === 'application/pdf' || file.type === '');
+    if (!isPdf) {
+      addMessage({
+        text: 'File không hợp lệ. Vui lòng chỉ tải lên báo cáo định dạng PDF.',
+        isUser: false,
+        isSystem: true,
+        isError: true
+      });
+      return;
+    }
+
+    // Validate file size (< 100MB)
+    const MAX_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+    if (file.size > MAX_SIZE) {
+      addMessage({
+        text: 'Kích thước file quá lớn. Vui lòng tải lên file nhỏ hơn 100MB.',
+        isUser: false,
+        isSystem: true,
+        isError: true
+      });
+      return;
+    }
+
     const formData = new FormData();
     formData.append('file', file);
 
@@ -105,26 +154,64 @@ const MainContent = () => {
     addMessage({ text: userText, isUser: true });
 
     setLoading(true);
-    const aiMessageId = addMessage({ text: 'Đang suy nghĩ...', isUser: false, isSystem: true });
+    const aiMessageId = addMessage({ text: '', isUser: false, isSystem: true, steps: ['Khởi tạo luồng suy nghĩ...'] });
 
-    try {
-      const response = await apiClient.post('/chat', { message: userText });
+    const sseBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api/v1').replace('/api/v1', '');
+    const url = `${sseBaseUrl}/chat-stream?message=${encodeURIComponent(userText)}&thread_id=default`;
+
+    const eventSource = new EventSource(url, { withCredentials: true });
+    let steps: string[] = ['Khởi tạo luồng suy nghĩ...'];
+
+    eventSource.addEventListener('step', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.output) {
+          // Prevent exact duplicate consecutive steps
+          if (steps[steps.length - 1] !== data.output) {
+            steps = [...steps, data.output];
+          }
+          updateMessage(aiMessageId, {
+            text: '',
+            isSystem: true,
+            steps: steps
+          });
+        }
+      } catch (e) {
+        console.error('Error parsing step event:', e);
+      }
+    });
+
+    eventSource.addEventListener('final_answer', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.content) {
+          updateMessage(aiMessageId, {
+            text: data.content,
+            isSystem: false,
+            steps: steps,
+            chartImageUrl: data.chart_url // Assign validated chart asset URL
+          });
+        }
+      } catch (e) {
+        console.error('Error parsing final_answer event:', e);
+      }
+    });
+
+    eventSource.addEventListener('done', () => {
+      eventSource.close();
+      setLoading(false);
+    });
+
+    eventSource.addEventListener('error', (event) => {
+      console.error('SSE Error:', event);
+      eventSource.close();
       updateMessage(aiMessageId, {
-        text: response.data.message,
-        isSystem: false,
-        hasChart: response.data.has_chart,
-        chartType: response.data.chart_type,
-        chartData: response.data.chart_data
-      });
-    } catch (error) {
-      updateMessage(aiMessageId, {
-        text: 'Xin lỗi, tôi gặp lỗi khi kết nối với máy chủ.',
+        text: 'Xin lỗi, tôi gặp lỗi khi kết nối luồng với máy chủ.',
         isSystem: false,
         isError: true
       });
-    } finally {
       setLoading(false);
-    }
+    });
   };
 
   return (
@@ -138,18 +225,23 @@ const MainContent = () => {
       <input {...getInputProps()} />
       
       {/* Header */}
-      <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-indigo-600" />
-          <h2 className="font-semibold text-slate-800">Financial Intelligence Agent</h2>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-slate-200" />
-            ))}
+      <header className="h-16 border-b border-slate-200 bg-white/90 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10 shadow-sm">
+        <div className="flex items-center gap-2.5">
+          <div className="relative">
+            <Sparkles className="w-5 h-5 text-indigo-600" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full border border-white" />
           </div>
-          <button className="text-xs font-medium text-indigo-600 hover:text-indigo-700">Share analysis</button>
+          <div>
+            <h2 className="font-bold text-slate-900 tracking-tight text-[15px] leading-none">Financial Intelligence Agent</h2>
+            <p className="text-[10px] text-emerald-600 font-semibold uppercase tracking-widest mt-0.5">Multi-Agent Online</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 bg-slate-50 border border-slate-200 rounded-full px-3 py-1.5">
+            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+            LangGraph Active
+          </div>
+          <button className="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-3 py-1.5 rounded-full transition-all">Share</button>
         </div>
       </header>
 
@@ -171,20 +263,22 @@ const MainContent = () => {
               tự động trích xuất biểu đồ và nhận định từ AI.
             </p>
             
-            <div className="grid grid-cols-2 gap-4 w-full mt-8">
-              <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow text-left group">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
-                  <FileText className="w-5 h-5 text-blue-600" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mt-8">
+              {/* Upload card */}
+              <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-200 transition-all text-left group cursor-default">
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-indigo-100 transition-colors border border-indigo-100">
+                  <FileText className="w-5 h-5 text-indigo-600" />
                 </div>
-                <h3 className="font-semibold text-slate-800 mb-1">Tải lên PDF</h3>
-                <p className="text-sm text-slate-500">Kéo thả hoặc chọn tệp báo cáo tài chính của bạn.</p>
+                <h3 className="font-bold text-slate-800 mb-1.5 tracking-tight">Tải lên BCTC</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">Kéo thả hoặc nhấn biểu tượng upload để bắt đầu phân tích tài liệu PDF.</p>
               </div>
-              <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow text-left group">
-                <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-indigo-100 transition-colors">
-                  <Sparkles className="w-5 h-5 text-indigo-600" />
+              {/* Chat card */}
+              <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md hover:border-emerald-200 transition-all text-left group cursor-default">
+                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-emerald-100 transition-colors border border-emerald-100">
+                  <Sparkles className="w-5 h-5 text-emerald-600" />
                 </div>
-                <h3 className="font-semibold text-slate-800 mb-1">Chat với AI</h3>
-                <p className="text-sm text-slate-500">Đặt câu hỏi trực tiếp về số liệu trong báo cáo.</p>
+                <h3 className="font-bold text-slate-800 mb-1.5 tracking-tight">Phân tích với AI</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">Đặt câu hỏi tài chính và nhận phân tích chuyên sâu với biểu đồ tự động.</p>
               </div>
             </div>
           </div>
