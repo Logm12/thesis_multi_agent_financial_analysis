@@ -11,11 +11,15 @@ RUN apt-get update && apt-get install -y \
 
 # Copy backend requirements and install
 COPY pyproject.toml .
-RUN pip install --no-cache-dir .
-RUN pip install --no-cache-dir fastapi uvicorn sse-starlette python-multipart redis psycopg[binary] \
+RUN pip install --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/
+RUN pip install --default-timeout=1000 --retries 30 --no-cache-dir . -i https://mirrors.aliyun.com/pypi/simple/
+RUN pip install --default-timeout=1000 --retries 30 --no-cache-dir fastapi uvicorn sse-starlette python-multipart redis psycopg[binary] \
     langgraph langsmith langchain-core langchain-chroma langchain-openai langchain-text-splitters \
     langchain-experimental openai langgraph-checkpoint-postgres langchain-huggingface \
-    pandas matplotlib tabulate
+    pandas matplotlib tabulate -i https://mirrors.aliyun.com/pypi/simple/
+RUN pip install --default-timeout=1000 --retries 30 --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --default-timeout=1000 --retries 30 --no-cache-dir easyocr -i https://mirrors.aliyun.com/pypi/simple/
+RUN python -c "import easyocr; easyocr.Reader(['vi'], gpu=False)"
 
 # Copy project source
 COPY backend/ /app/backend/

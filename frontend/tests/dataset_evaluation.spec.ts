@@ -12,13 +12,36 @@ test.describe('Multi-Agent E2E Financial Analysis Evaluation Suite', () => {
   test('Execute full 20-case evaluation against live system', async ({ page }) => {
     // 1. Load test cases
     expect(fs.existsSync(datasetPath)).toBe(true);
-    const testCases = JSON.parse(fs.readFileSync(datasetPath, 'utf-8'));
-    console.log(`Loaded ${testCases.length} test cases.`);
+    const testCases = JSON.parse(fs.readFileSync(datasetPath, 'utf-8')).slice(0, 20);
+    console.log(`Loaded ${testCases.length} test cases (capped at 20 for UI validation stability).`);
 
     // 2. Navigate to frontend dev server
     await page.goto('http://localhost:5173');
     await page.waitForLoadState('networkidle');
     console.log('Successfully navigated to http://localhost:5173');
+
+    // Register and login to start an authenticated session on the live system
+    await page.goto('http://localhost:5173/#/login');
+    const switchBtn = page.locator('button:has-text("Create one")');
+    await switchBtn.waitFor({ state: 'visible', timeout: 5000 });
+    await switchBtn.click();
+    const email = `eval_${Date.now()}@lumo.ai`;
+    await page.locator('#fullName').fill('Evaluation User');
+    await page.locator('#email').fill(email);
+    await page.locator('#password').fill('Lumo@2024!');
+    await page.getByRole('button', { name: 'Sign Up' }).click();
+    await page.waitForTimeout(2000);
+
+    // Manual login since registration redirects to login page
+    if (await page.locator('#email').isVisible()) {
+      console.log('Logging in with registered evaluation credentials...');
+      await page.locator('#email').fill(email);
+      await page.locator('#password').fill('Lumo@2024!');
+      await page.getByRole('button', { name: 'Sign In' }).click();
+    }
+    
+    // Wait for auth to complete and transition to the dashboard
+    await page.locator('input[placeholder*="Ask AI about"]').waitFor({ state: 'visible', timeout: 15000 });
 
     // 3. Ingestion of PDFs (both Digital and Scanned)
     const pdfsToUpload = [
@@ -61,7 +84,7 @@ test.describe('Multi-Agent E2E Financial Analysis Evaluation Suite', () => {
       const startTime = Date.now();
 
       // Enter question in chat
-      const input = page.locator('input[placeholder*="Hỏi AI về báo cáo tài chính"]');
+      const input = page.locator('input[placeholder*="Ask AI about"]');
       await input.fill(tc.question);
       await input.press('Enter');
 

@@ -48,6 +48,6 @@ def test_synthesizer_data_conflict_prompt_and_flow():
         
         # Ensure the prompt contains system instructions and the conflict rules
         prompt_text = str(call_args)
-        assert "XUNG ĐỘT SỐ LIỆU" in prompt_text
-        assert "Bảng biểu" in prompt_text
+        assert "DATA CONFLICT RESOLUTION" in prompt_text
+        assert "tabular structure" in prompt_text
         assert "100.5" in prompt_text

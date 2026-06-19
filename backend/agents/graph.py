@@ -92,7 +92,8 @@ def ingest_pdf(file_path: str):
     """Utility function để nạp PDF mới vào VectorDB."""
     print(f"[*] Đang nạp file: {file_path}")
     parser = FastPDFParser()
-    content = parser.parse(file_path)
+    blocks = parser.parse_blocks(file_path)
+    content = "\n\n".join([b.get("text", "") for b in blocks if "text" in b])
     
     # Chuyển đổi content thành chunks (Markdown split)
     headers_to_split_on = [
@@ -121,3 +122,6 @@ def get_graph_app():
         print("[Graph] Initializing LangGraph application...")
         _graph_app = build_graph()
     return _graph_app
+
+app = get_graph_app()
+

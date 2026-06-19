@@ -12,6 +12,26 @@ if str(backend_dir) not in sys.path:
 if str(project_root) not in sys.path:
     sys.path.insert(1, str(project_root))
 
+# Mock heavy modules at import time before they are loaded by app modules
+mock_embeddings = MagicMock()
+class MockEmbedder:
+    @staticmethod
+    def get_openai_embedding_model(*args, **kwargs):
+        return mock_embeddings
+    @staticmethod
+    def get_vietnamese_embedding_model(*args, **kwargs):
+        return mock_embeddings
+
+sys.modules["services.rag.embedder"] = MockEmbedder
+sys.modules["backend.services.rag.embedder"] = MockEmbedder
+
+# Mock Chroma
+mock_chroma_module = MagicMock()
+mock_chroma_class = MagicMock()
+mock_chroma_module.Chroma = mock_chroma_class
+sys.modules["langchain_chroma"] = mock_chroma_module
+sys.modules["backend.api.document.Chroma"] = mock_chroma_class
+
 # Fix console encoding globally for Windows
 if sys.stdout.encoding != 'utf-8':
     try:
@@ -48,10 +68,17 @@ except ImportError:
 
 from fastapi.testclient import TestClient  # noqa: E402
 
+
 @pytest.fixture
 def client():
     """Fixture trả về FastAPI test client."""
-    return TestClient(app)
+    from api.auth import get_current_user
+    from api.document import get_current_user_or_default
+    app.dependency_overrides[get_current_user] = lambda: {"id": "dummy_user_id", "email": "test@example.com", "role": "USER"}
+    app.dependency_overrides[get_current_user_or_default] = lambda: {"id": "dummy_user_id", "email": "test@example.com", "role": "USER"}
+    c = TestClient(app)
+    yield c
+    app.dependency_overrides.clear()
 
 @pytest.fixture(autouse=True)
 def mock_redis(monkeypatch):

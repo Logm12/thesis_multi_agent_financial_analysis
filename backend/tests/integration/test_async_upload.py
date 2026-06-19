@@ -42,24 +42,24 @@ def setup_mocks(monkeypatch):
     
     # Patch FastPDFParser directly in backend.api.document namespace
     import backend.api.document
-    monkeypatch.setattr(backend.api.document.FastPDFParser, "parse_blocks", lambda self, file_path: mocked_blocks)
+    monkeypatch.setattr(backend.api.document.FastPDFParser, "parse_blocks", lambda self, file_path, *args, **kwargs: mocked_blocks)
     
     # Patch FastPDFParser in services.ocr.pdf_parser namespace
     try:
         import services.ocr.pdf_parser
-        monkeypatch.setattr(services.ocr.pdf_parser.FastPDFParser, "parse_blocks", lambda self, file_path: mocked_blocks)
+        monkeypatch.setattr(services.ocr.pdf_parser.FastPDFParser, "parse_blocks", lambda self, file_path, *args, **kwargs: mocked_blocks)
     except ImportError:
         pass
         
     # Patch FastPDFParser in backend.services.ocr.pdf_parser namespace
     try:
         import backend.services.ocr.pdf_parser
-        monkeypatch.setattr(backend.services.ocr.pdf_parser.FastPDFParser, "parse_blocks", lambda self, file_path: mocked_blocks)
+        monkeypatch.setattr(backend.services.ocr.pdf_parser.FastPDFParser, "parse_blocks", lambda self, file_path, *args, **kwargs: mocked_blocks)
     except ImportError:
         pass
         
     # Patch the class itself in this module's scope
-    monkeypatch.setattr(FastPDFParser, "parse_blocks", lambda self, file_path: mocked_blocks)
+    monkeypatch.setattr(FastPDFParser, "parse_blocks", lambda self, file_path, *args, **kwargs: mocked_blocks)
     
     # 5. Mock BackgroundTasks.add_task to schedule cleanly in the active running event loop
     def mock_add_task(self, func, *args, **kwargs):
@@ -122,7 +122,7 @@ def test_async_upload_scanned_pdf_ocr_fallback(client, monkeypatch):
     Verifies that the EasyOCR fallback is executed and returns mock text successfully.
     """
     # Force FastPDFParser to run OCR path
-    def mock_parse_blocks_scanned(self, file_path):
+    def mock_parse_blocks_scanned(self, file_path, *args, **kwargs):
         self._init_ocr()
         img = sys.modules["numpy"].zeros((100, 100, 3), dtype=sys.modules["numpy"].uint8)
         results = self.reader.readtext(img, detail=1)

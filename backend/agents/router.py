@@ -20,27 +20,28 @@ class RouteQuery(BaseModel):
     reasoning: str = Field(..., description="Lý do phân loại ý định.")
 
 
+from core.nim_client import get_nim_llm
+
 # Khởi tạo model từ config
-llm = ChatOpenAI(
-    model=ROUTER_MODEL,
+llm = get_nim_llm(
+    model_name=ROUTER_MODEL,
     temperature=0,
-    api_key=os.getenv("OPENAI_API_KEY"),
 )
 
 # Ràng buộc output theo Pydantic schema
 structured_llm = llm.with_structured_output(RouteQuery)
 
-ROUTER_PROMPT = """Bạn là một chuyên gia điều phối (Router Agent) cho hệ thống phân tích báo cáo tài chính.
-Nhiệm vụ của bạn là phân loại câu hỏi của người dùng vào một trong các loại sau:
+ROUTER_PROMPT = """You are a specialized router agent for a financial statement analysis system.
+Your task is to classify the user's query into one of the following categories:
 
-1. 'retrieve': Câu hỏi mang tính tra cứu, tìm kiếm định nghĩa hoặc thông tin có sẵn trong văn bản.
-   - VD: "Doanh thu năm 2024 là bao nhiêu?", "Tầm nhìn của công ty là gì?", "Ai là chủ tịch?"
-2. 'code': Câu hỏi mang tính tính toán phức tạp, so sánh dữ liệu nhiều năm, hoặc yêu cầu vẽ biểu đồ.
-   - VD: "So sánh tăng trưởng doanh thu 3 năm qua", "Tính tỷ lệ biên lợi nhuận ròng", "Vẽ biểu đồ nợ phải trả."
-3. 'out_of_scope': Câu hỏi phá hoại, hack, hoặc ngoài lề, không liên quan đến phân tích báo cáo tài chính doanh nghiệp.
-   - VD: "Thời tiết hôm nay thế nào?", "Làm sao để hack facebook?", "Hãy viết cho tôi một bài thơ."
+1. 'retrieve': Questions that are informational, querying facts, definitions, or standard textual details present in the document.
+   - Examples: "What is the revenue for 2024?", "What is the corporate vision statement?", "Who is the CEO?"
+2. 'code': Questions requiring mathematical computations, multi-year comparisons, or chart generation.
+   - Examples: "Compare the revenue growth rate over the last 3 years", "Calculate the net profit margin", "Draw a chart showing liabilities."
+3. 'out_of_scope': Out-of-scope, off-topic, or malicious queries that are not related to corporate financial statement analysis.
+   - Examples: "What is the weather today?", "How do I hack a Facebook account?", "Write a poem for me."
 
-Hãy phân tích kỹ nội dung câu hỏi và trả về kết quả phân loại phù hợp nhất."""
+Analyze the question carefully and return the most appropriate classification."""
 
 
 def router_node(state: AgentState) -> dict:
@@ -58,11 +59,28 @@ def router_node(state: AgentState) -> dict:
     chain = prompt | structured_llm
     result: RouteQuery = chain.invoke({"question": user_question})
 
-    print(f"[Router] Intent: {result.intent} | Lý do: {result.reasoning}")
+    print(f"[Router] Intent: {result.intent} | Reason: {result.reasoning}")
+
+    # Telemetry Logging Guard: Save query, predicted intent, and ground truth to PostgreSQL
+    from core.database import get_db_connection
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO intent_logs (query, predicted_intent, ground_truth) VALUES (%s, %s, %s)",
+                    (user_question, result.intent, state.get("ground_truth"))
+                )
+    except Exception as e:
+        print(f"[Telemetry Logging Guard] Error inserting intent log: {str(e)}")
+
+    # Poka-Yoke firewall: enforce strict Literal type checks
+    allowed_intents = {"retrieve", "code", "out_of_scope"}
+    validated_intent = result.intent if result.intent in allowed_intents else "out_of_scope"
 
     return {
-        "intent": result.intent, 
+        "intent": validated_intent, 
         "question": user_question, 
         "error_count": 0,
-        "steps": [f"🔍 Router đã xác định ý định: {result.intent} ({result.reasoning})"]
+        "steps": [f"Router determined query intent: {validated_intent} ({result.reasoning})"]
     }
+

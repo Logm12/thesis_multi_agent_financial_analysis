@@ -63,11 +63,10 @@ class SafePythonREPL:
 
         return True
 
-    def execute(self, code_str: str) -> dict:
+    def execute(self, code_str: str, timeout: float = 10.0) -> dict:
         """
         Executes code safely and captures stdout, stderr, and generated matplotlib plots.
-        Returns:
-            {"stdout": str, "stderr": str, "plot": str (base64 image or empty), "success": bool, "error": str}
+        Uses a separate subprocess for security and cross-platform timeout/SIGKILL capabilities.
         """
         try:
             self.validate_code(code_str)
@@ -80,79 +79,221 @@ class SafePythonREPL:
                 "error": f"Security Validation Error: {e}"
             }
 
-        # Clear any existing matplotlib plots
+        runner_script = """
+import sys
+import json
+import base64
+import io
+import traceback
+
+def run_code(code_str):
+    import pandas as pd
+    import numpy as np
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    plt.rcParams.update({
+        'figure.facecolor': '#FFFFFF',
+        'axes.facecolor': '#F8FAFC',
+        'axes.edgecolor': '#CBD5E1',
+        'axes.grid': True,
+        'grid.color': '#E2E8F0',
+        'grid.alpha': 0.6,
+        'font.family': 'sans-serif',
+        'font.size': 10,
+        'text.color': '#1E293B',
+        'axes.labelcolor': '#1E293B',
+        'xtick.color': '#475569',
+        'ytick.color': '#475569',
+        'figure.figsize': (10, 6),
+        'savefig.facecolor': '#FFFFFF',
+        'savefig.bbox': 'tight',
+    })
+
+    class NumpyJSONEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, (np.integer, np.floating)):
+                return obj.item()
+            elif isinstance(obj, np.ndarray):
+                return obj.tolist()
+            elif isinstance(obj, (pd.Timestamp, pd.Period)):
+                return str(obj)
+            return super().default(obj)
+
+    class CustomJSON:
+        def dumps(self, *args, **kwargs):
+            if 'cls' not in kwargs:
+                kwargs['cls'] = NumpyJSONEncoder
+            return json.dumps(*args, **kwargs)
+        def dump(self, *args, **kwargs):
+            if 'cls' not in kwargs:
+                kwargs['cls'] = NumpyJSONEncoder
+            return json.dump(*args, **kwargs)
+        def __getattr__(self, name):
+            return getattr(json, name)
+
+    custom_json = CustomJSON()
+
+    captured_stdout = io.StringIO()
+    captured_stderr = io.StringIO()
+    
+    sys.stdout = captured_stdout
+    sys.stderr = captured_stderr
+
+    blocked_builtins = {"open", "eval", "exec", "globals", "locals", "compile", "dir", "help", "input", "getattr", "setattr", "delattr"}
+    if hasattr(__builtins__, "__dict__"):
+        builtins_dict = __builtins__.__dict__
+    elif isinstance(__builtins__, dict):
+        builtins_dict = __builtins__
+    else:
+        builtins_dict = {}
+    safe_builtins = {k: v for k, v in builtins_dict.items() if k not in blocked_builtins}
+
+    safe_globals = {
+        "__builtins__": safe_builtins,
+        "pd": pd,
+        "pandas": pd,
+        "np": np,
+        "numpy": np,
+        "plt": plt,
+        "matplotlib": matplotlib,
+        "json": custom_json
+    }
+
+
+    success = True
+    error_msg = ""
+    try:
+        exec(code_str, safe_globals)
+    except Exception as e:
+        success = False
+        error_msg = str(e)
+        traceback.print_exc(file=sys.stderr)
+        
+    plot_base64 = ""
+    try:
+        fig = plt.gcf()
+        if fig.get_axes():
+            buf = io.BytesIO()
+            fig.savefig(buf, format='png', bbox_inches='tight')
+            buf.seek(0)
+            plot_base64 = base64.b64encode(buf.read()).decode('utf-8')
+    except Exception as e:
+        captured_stderr.write(f"Matplotlib capture failed: {e}\\n")
+    finally:
         plt.clf()
         plt.close('all')
 
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
-        captured_stdout = io.StringIO()
-        captured_stderr = io.StringIO()
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
+
+    result = {
+        "stdout": captured_stdout.getvalue(),
+        "stderr": captured_stderr.getvalue(),
+        "plot": plot_base64,
+        "success": success,
+        "error": error_msg
+    }
+    print(json.dumps(result))
+
+if __name__ == "__main__":
+    user_code = sys.stdin.read()
+    run_code(user_code)
+"""
+
+        import subprocess
+        import sys
+        import json
+        import shutil
         
-        success = True
-        error_msg = ""
+        # Check if docker is available and running
+        use_docker = False
+        if shutil.which("docker"):
+            try:
+                # Quick check if docker daemon is reachable
+                res = subprocess.run(["docker", "info"], capture_output=True, timeout=2)
+                if res.returncode == 0:
+                    use_docker = True
+            except Exception:
+                pass
 
         try:
-            sys.stdout = captured_stdout
-            sys.stderr = captured_stderr
-
-            # Define safe builtins dynamically
-            if hasattr(__builtins__, "__dict__"):
-                builtins_dict = __builtins__.__dict__
-            elif isinstance(__builtins__, dict):
-                builtins_dict = __builtins__
+            if use_docker:
+                # Run containerized using thesis-backend:latest
+                proc = subprocess.Popen(
+                    [
+                        "docker", "run", "--rm", "-i",
+                        "--network", "none",
+                        "--memory", "256m",
+                        "--cpus", "0.5",
+                        "thesis-backend:latest",
+                        "python", "-u", "-c", runner_script
+                    ],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    encoding="utf-8"
+                )
             else:
-                builtins_dict = {}
-                
-            safe_builtins = {k: v for k, v in builtins_dict.items() if k not in self.blocked_builtins}
-
-            # Define safe globals
-            safe_globals = {
-                "__builtins__": safe_builtins,
-                "pd": pd,
-                "pandas": pd,
-                "np": np,
-                "numpy": np,
-                "plt": plt,
-                "matplotlib": matplotlib
-            }
+                proc = subprocess.Popen(
+                    [sys.executable, "-c", runner_script],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    encoding="utf-8"
+                )
             
             try:
-                exec(code_str, safe_globals)
-            except Exception as e:
-                success = False
-                error_msg = str(e)
-                print(f"Runtime Error: {e}", file=sys.stderr)
-        except Exception as e:
-            success = False
-            error_msg = f"Sandbox Setup Error: {e}"
-            captured_stderr.write(f"Sandbox Setup Error: {e}\n")
-        finally:
-            sys.stdout = old_stdout
-            sys.stderr = old_stderr
-
-        # Capture plot if generated
-        plot_base64 = ""
-        try:
-            fig = plt.gcf()
-            if fig.get_axes():  # Check if there is an active plot
-                buf = io.BytesIO()
-                fig.savefig(buf, format='png', bbox_inches='tight')
-                buf.seek(0)
-                plot_base64 = base64.b64encode(buf.read()).decode('utf-8')
-        except Exception as e:
-            captured_stderr.write(f"Matplotlib capture failed: {e}\n")
-        finally:
-            plt.clf()
-            plt.close('all')
-
-        return {
-            "stdout": captured_stdout.getvalue(),
-            "stderr": captured_stderr.getvalue(),
-            "plot": plot_base64,
-            "success": success,
-            "error": error_msg
-        }
+                stdout, stderr = proc.communicate(input=code_str, timeout=timeout)
+            except subprocess.TimeoutExpired:
+                # Force kill the process/container
+                if use_docker:
+                    # Docker containers ran with --rm are killed, but let's terminate the parent process immediately
+                    proc.kill()
+                    proc.communicate()
+                else:
+                    proc.kill()
+                    proc.communicate()
+                return {
+                    "stdout": "",
+                    "stderr": f"Execution timed out after {timeout} seconds. Process was terminated.",
+                    "plot": "",
+                    "success": False,
+                    "error": f"TimeoutError: Execution exceeded time limit of {timeout}s."
+                }
+                
+            if proc.returncode != 0:
+                return {
+                    "stdout": stdout,
+                    "stderr": stderr or f"Process exited with code {proc.returncode}",
+                    "plot": "",
+                    "success": False,
+                    "error": f"Process exited with non-zero code {proc.returncode}"
+                }
+                
+            # Parse result from stdout JSON
+            try:
+                result = json.loads(stdout.strip())
+                return result
+            except Exception as parse_err:
+                return {
+                    "stdout": stdout,
+                    "stderr": stderr + f"\nParse Error: {parse_err}",
+                    "plot": "",
+                    "success": False,
+                    "error": f"Failed to parse runner output: {parse_err}"
+                }
+                
+        except Exception as setup_err:
+            return {
+                "stdout": "",
+                "stderr": str(setup_err),
+                "plot": "",
+                "success": False,
+                "error": f"Sandbox execution setup error: {setup_err}"
+            }
 
 if __name__ == "__main__":
     repl = SafePythonREPL()
@@ -171,3 +312,4 @@ if __name__ == "__main__":
     blocked_code = "open('test.txt', 'w')"
     print("\nInvalid Code execution test (open block):")
     print(repl.execute(blocked_code))
+

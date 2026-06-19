@@ -4,6 +4,7 @@ import { useDropzone } from 'react-dropzone';
 import { useChatStore } from '../store/useChatStore';
 import MessageBubble from './MessageBubble';
 import apiClient from '../api/client';
+import { useSSE } from '../api/useSSE';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -12,9 +13,14 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const MainContent = () => {
-  const { messages, addMessage, updateMessage, isProcessing, setProcessing, isLoading, setLoading } = useChatStore();
+  const { messages, addMessage, updateMessage, isProcessing, setProcessing, isLoading, setLoading, activePdfId, setActivePdf } = useChatStore();
   const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { connect: connectSSE } = useSSE();
+
+  useEffect(() => {
+    console.log('[MainContent] activePdfId is now:', activePdfId);
+  }, [activePdfId]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -30,7 +36,7 @@ const MainContent = () => {
     if (!taskId || taskId === 'undefined') {
       console.error('[Polling] Aborting: Invalid taskId', taskId);
       updateMessage(messageId, {
-        text: 'Lỗi: Không nhận được mã tiến trình hợp lệ từ máy chủ.',
+        text: 'Error: Did not receive a valid task process ID from the server.',
         isSystem: false,
         isError: true
       });
@@ -46,7 +52,7 @@ const MainContent = () => {
       if (attempts > maxAttempts) {
         clearInterval(interval);
         updateMessage(messageId, {
-          text: 'Quá thời gian xử lý tài liệu. Vui lòng kiểm tra lại trạng thái ở Knowledge Base.',
+          text: 'Document processing timeout. Please check the status in the Knowledge Base.',
           isSystem: false,
           isError: true
         });
@@ -60,8 +66,9 @@ const MainContent = () => {
 
         if (status === 'completed') {
           clearInterval(interval);
+          setActivePdf(taskId);
           updateMessage(messageId, {
-            text: details || 'Tài liệu đã được xử lý và đánh chỉ mục thành công.',
+            text: details || 'Document has been successfully processed and indexed.',
             isSystem: false,
             hasChart: false
           });
@@ -69,7 +76,7 @@ const MainContent = () => {
         } else if (status === 'failed') {
           clearInterval(interval);
           updateMessage(messageId, {
-            text: `Xin lỗi, quá trình xử lý tài liệu đã thất bại: ${details || 'Lỗi không xác định'}`,
+            text: `Sorry, document processing failed: ${details || 'Unknown error'}`,
             isSystem: false,
             isError: true
           });
@@ -77,7 +84,6 @@ const MainContent = () => {
         }
       } catch (error) {
         console.error('Polling error:', error);
-        // Do not fail immediately on transient network error, wait for retries
       }
     }, 2000);
   };
@@ -87,7 +93,7 @@ const MainContent = () => {
     const isPdf = file.name.toLowerCase().endsWith('.pdf') && (file.type === 'application/pdf' || file.type === '');
     if (!isPdf) {
       addMessage({
-        text: 'File không hợp lệ. Vui lòng chỉ tải lên báo cáo định dạng PDF.',
+        text: 'Invalid file. Please upload PDF reports only.',
         isUser: false,
         isSystem: true,
         isError: true
@@ -99,7 +105,7 @@ const MainContent = () => {
     const MAX_SIZE = 100 * 1024 * 1024; // 100MB in bytes
     if (file.size > MAX_SIZE) {
       addMessage({
-        text: 'Kích thước file quá lớn. Vui lòng tải lên file nhỏ hơn 100MB.',
+        text: 'File too large. Please upload a file smaller than 100MB.',
         isUser: false,
         isSystem: true,
         isError: true
@@ -111,7 +117,7 @@ const MainContent = () => {
     formData.append('file', file);
 
     const messageId = addMessage({
-      text: `Đang phân tích tài liệu: ${file.name}...`,
+      text: `Analyzing document: ${file.name}...`,
       isUser: false,
       isSystem: true
     });
@@ -124,8 +130,9 @@ const MainContent = () => {
       });
       pollStatus(response.data.task_id, messageId);
     } catch (error) {
+      console.error('Upload error:', error);
       updateMessage(messageId, {
-        text: 'Lỗi khi tải tài liệu lên. Vui lòng thử lại.',
+        text: 'Error uploading document. Please try again.',
         isSystem: false,
         isError: true
       });
@@ -137,13 +144,13 @@ const MainContent = () => {
     if (acceptedFiles.length > 0) {
       uploadFile(acceptedFiles[0]);
     }
-  }, []);
+  }, [uploadFile]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { 'application/pdf': ['.pdf'] },
     multiple: false,
-    noClick: true // We want to use the specific upload button or dragging
+    noClick: true
   });
 
   const handleSendMessage = async () => {
@@ -154,63 +161,56 @@ const MainContent = () => {
     addMessage({ text: userText, isUser: true });
 
     setLoading(true);
-    const aiMessageId = addMessage({ text: '', isUser: false, isSystem: true, steps: ['Khởi tạo luồng suy nghĩ...'] });
+    const aiMessageId = addMessage({ text: '', isUser: false, isSystem: true, steps: ['Initializing thought process...'] });
 
     const sseBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api/v1').replace('/api/v1', '');
     const url = `${sseBaseUrl}/chat-stream?message=${encodeURIComponent(userText)}&thread_id=default`;
 
-    const eventSource = new EventSource(url, { withCredentials: true });
-    let steps: string[] = ['Khởi tạo luồng suy nghĩ...'];
+    let steps: string[] = ['Initializing thought process...'];
+    useChatStore.getState().setActiveSteps(steps);
 
-    eventSource.addEventListener('step', (event) => {
-      try {
-        const data = JSON.parse(event.data);
+    connectSSE(url, {
+      onStep: (data) => {
         if (data.output) {
-          // Prevent exact duplicate consecutive steps
           if (steps[steps.length - 1] !== data.output) {
             steps = [...steps, data.output];
           }
+          useChatStore.getState().setActiveSteps(steps);
           updateMessage(aiMessageId, {
             text: '',
             isSystem: true,
             steps: steps
           });
         }
-      } catch (e) {
-        console.error('Error parsing step event:', e);
-      }
-    });
-
-    eventSource.addEventListener('final_answer', (event) => {
-      try {
-        const data = JSON.parse(event.data);
+      },
+      onFinalAnswer: (data) => {
         if (data.content) {
           updateMessage(aiMessageId, {
             text: data.content,
             isSystem: false,
             steps: steps,
-            chartImageUrl: data.chart_url // Assign validated chart asset URL
+            chartImageUrl: data.chart_url || undefined,
+            hasChart: !!data.chart_data,
+            chartData: data.chart_data || undefined,
+            chartType: data.chart_type || 'bar'
           });
         }
-      } catch (e) {
-        console.error('Error parsing final_answer event:', e);
+      },
+
+      onDone: () => {
+        setLoading(false);
+        useChatStore.getState().setActiveSteps([]);
+      },
+      onError: (err) => {
+        console.error('SSE Error:', err);
+        updateMessage(aiMessageId, {
+          text: 'Sorry, I encountered an error connecting to the server stream.',
+          isSystem: false,
+          isError: true
+        });
+        setLoading(false);
+        useChatStore.getState().setActiveSteps([]);
       }
-    });
-
-    eventSource.addEventListener('done', () => {
-      eventSource.close();
-      setLoading(false);
-    });
-
-    eventSource.addEventListener('error', (event) => {
-      console.error('SSE Error:', event);
-      eventSource.close();
-      updateMessage(aiMessageId, {
-        text: 'Xin lỗi, tôi gặp lỗi khi kết nối luồng với máy chủ.',
-        isSystem: false,
-        isError: true
-      });
-      setLoading(false);
     });
   };
 
@@ -237,8 +237,8 @@ const MainContent = () => {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 bg-slate-50 border border-slate-200 rounded-full px-3 py-1.5">
-            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+          <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-full px-3 py-1.5 shadow-sm">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
             LangGraph Active
           </div>
           <button className="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-3 py-1.5 rounded-full transition-all">Share</button>
@@ -256,29 +256,35 @@ const MainContent = () => {
               <Sparkles className="w-10 h-10 text-indigo-600" />
             </div>
             <h1 className="text-4xl font-bold text-slate-900 tracking-tight">
-              Phân tích báo cáo tài chính <span className="text-indigo-600">thế hệ mới</span>
+              Next-Generation <span className="text-indigo-600">Financial Analysis</span>
             </h1>
             <p className="text-slate-500 text-lg leading-relaxed">
-              Tải lên báo cáo tài chính (PDF) để bắt đầu phân tích dữ liệu chuyên sâu, 
-              tự động trích xuất biểu đồ và nhận định từ AI.
+              Upload your financial report (PDF) to start deep data analysis, 
+              automated chart generation, and AI insights.
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mt-8">
               {/* Upload card */}
-              <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-200 transition-all text-left group cursor-default">
+              <div 
+                onClick={() => document.getElementById('file-upload')?.click()}
+                className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-500 hover:scale-[1.01] active:scale-[0.99] transition-all text-left group cursor-pointer"
+              >
                 <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-indigo-100 transition-colors border border-indigo-100">
                   <FileText className="w-5 h-5 text-indigo-600" />
                 </div>
-                <h3 className="font-bold text-slate-800 mb-1.5 tracking-tight">Tải lên BCTC</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">Kéo thả hoặc nhấn biểu tượng upload để bắt đầu phân tích tài liệu PDF.</p>
+                <h3 className="font-bold text-slate-800 mb-1.5 tracking-tight">Upload Report</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">Drag & drop or click upload to start analyzing the PDF document.</p>
               </div>
               {/* Chat card */}
-              <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md hover:border-emerald-200 transition-all text-left group cursor-default">
+              <div 
+                onClick={() => document.getElementById('chat-input-field')?.focus()}
+                className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md hover:border-emerald-500 hover:scale-[1.01] active:scale-[0.99] transition-all text-left group cursor-pointer"
+              >
                 <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-emerald-100 transition-colors border border-emerald-100">
                   <Sparkles className="w-5 h-5 text-emerald-600" />
                 </div>
-                <h3 className="font-bold text-slate-800 mb-1.5 tracking-tight">Phân tích với AI</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">Đặt câu hỏi tài chính và nhận phân tích chuyên sâu với biểu đồ tự động.</p>
+                <h3 className="font-bold text-slate-800 mb-1.5 tracking-tight">Analyze with AI</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">Ask financial questions and get in-depth insights with automated charts.</p>
               </div>
             </div>
           </div>
@@ -293,8 +299,8 @@ const MainContent = () => {
                   <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center animate-bounce">
                     <Upload className="w-8 h-8 text-indigo-600" />
                   </div>
-                  <p className="text-lg font-semibold text-slate-900">Thả tệp vào đây để tải lên</p>
-                  <p className="text-sm text-slate-500">Hỗ trợ định dạng PDF</p>
+                  <p className="text-lg font-semibold text-slate-900">Drop file here to upload</p>
+                  <p className="text-sm text-slate-500">PDF format supported</p>
                 </div>
               </div>
             )}
@@ -322,19 +328,21 @@ const MainContent = () => {
                 onChange={(e) => e.target.files?.[0] && uploadFile(e.target.files[0])}
               />
               <input
+                id="chat-input-field"
                 type="text"
-                placeholder="Hỏi AI về báo cáo tài chính của bạn..."
-                className="flex-1 py-4 px-2 text-sm focus:outline-none text-slate-700 bg-transparent"
+                disabled={!activePdfId}
+                placeholder={activePdfId ? "Ask AI about your financial report..." : "Please upload or select a financial report to start chatting..."}
+                className="flex-1 py-4 px-2 text-sm focus:outline-none text-slate-700 bg-transparent disabled:cursor-not-allowed disabled:text-slate-400"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               />
               <button 
                 onClick={handleSendMessage}
-                disabled={!inputValue.trim() || isLoading}
+                disabled={!activePdfId || !inputValue.trim() || isLoading}
                 className={cn(
                   "m-2 p-2.5 rounded-xl transition-all",
-                  inputValue.trim() && !isLoading 
+                  activePdfId && inputValue.trim() && !isLoading 
                     ? "bg-indigo-600 text-white shadow-md shadow-indigo-200 hover:bg-indigo-700" 
                     : "bg-slate-100 text-slate-400 cursor-not-allowed"
                 )}
@@ -344,7 +352,7 @@ const MainContent = () => {
             </div>
           </div>
           <p className="mt-3 text-center text-[11px] text-slate-400 font-medium">
-            AI có thể đưa ra câu trả lời sai sót. Hãy kiểm tra lại các thông tin quan trọng.
+            AI can make mistakes. Please verify important information.
           </p>
         </div>
       </div>

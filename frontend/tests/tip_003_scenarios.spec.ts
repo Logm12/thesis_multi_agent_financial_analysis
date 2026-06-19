@@ -22,6 +22,18 @@ test.describe('TIP-QA-003 E2E Scenarios', () => {
   });
 
   test('Scenario 1: Upload API should hit /api/v1/upload-pdf and receive 200 OK', async ({ page }) => {
+    // Mock authenticated user session
+    await page.route('**/api/v1/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'user-123', email: 'test@example.com', full_name: 'Test User', role: 'USER' })
+      });
+    });
+    await page.route('**/health', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) });
+    });
+
     let apiCalledWithV1 = false;
 
     // Intercept POST to new unified endpoint
@@ -34,7 +46,7 @@ test.describe('TIP-QA-003 E2E Scenarios', () => {
       });
     });
 
-    await page.goto('http://localhost:5174');
+    await page.goto('http://localhost:5173');
 
     // Trigger file upload
     await page.locator('#file-upload').evaluate((el: HTMLInputElement) => el.style.display = 'block');
@@ -46,6 +58,18 @@ test.describe('TIP-QA-003 E2E Scenarios', () => {
   });
 
   test('Scenario 2: Markdown Bold Rendering (**text** should become bold element)', async ({ page }) => {
+    // Mock authenticated user session
+    await page.route('**/api/v1/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'user-123', email: 'test@example.com', full_name: 'Test User', role: 'USER' })
+      });
+    });
+    await page.route('**/health', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) });
+    });
+
     // Intercept chat-stream to return bold text
     await page.route('**/chat-stream*', async (route) => {
       await route.fulfill({
@@ -60,10 +84,10 @@ test.describe('TIP-QA-003 E2E Scenarios', () => {
       });
     });
 
-    await page.goto('http://localhost:5174');
+    await page.goto('http://localhost:5173');
 
     // Send a message to trigger chat
-    const input = page.locator('input[placeholder*="Hỏi AI về báo cáo"]');
+    const input = page.locator('input[placeholder*="Ask AI about"]');
     await input.fill('Hi');
     await input.press('Enter');
 
@@ -73,7 +97,19 @@ test.describe('TIP-QA-003 E2E Scenarios', () => {
   });
 
   test('Scenario 3: Sidebar should display Knowledge and navigate successfully to Knowledge Base dashboard', async ({ page }) => {
-    await page.goto('http://localhost:5174');
+    // Mock authenticated user session
+    await page.route('**/api/v1/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'user-123', email: 'test@example.com', full_name: 'Test User', role: 'USER' })
+      });
+    });
+    await page.route('**/health', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) });
+    });
+
+    await page.goto('http://localhost:5173');
 
     // Check that "Knowledge" item is in Sidebar
     const knowledgeBtn = page.locator('button:has-text("Knowledge")');

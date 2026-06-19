@@ -9,82 +9,140 @@ from .state import AgentState
 from core.config import ROUTER_MODEL
 from backend.tools.sandbox import SafePythonREPL
 
-# Cấu hình OpenAI LLM cho Coder (sử dụng ROUTER_MODEL = gpt-5.4-mini)
-llm = ChatOpenAI(
-    model=ROUTER_MODEL,
-    temperature=0,
-    api_key=os.getenv("OPENAI_API_KEY")
+from langchain_ollama import ChatOllama
+from core.config import CODER_MODEL, OLLAMA_BASE_URL
+
+# Ollama configuration for Coder (uses qwen2.5-coder-thesis:latest)
+llm = ChatOllama(
+    base_url=OLLAMA_BASE_URL.replace("/v1", ""),
+    model=CODER_MODEL,
+    temperature=0
 )
 
 def load_finance_dict() -> str:
-    """Đọc từ điển công thức tài chính để đưa vào prompt của Coder."""
+    """Read the financial formulas dictionary to include in the Coder prompt."""
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    # Đường dẫn tương thích: backend/tools/finance_dict.json
+    # Compatible path: backend/tools/finance_dict.json
     dict_path = os.path.join(os.path.dirname(current_dir), "tools", "finance_dict.json")
     try:
         with open(dict_path, "r", encoding="utf-8") as f:
             data = json.load(f)
             return json.dumps(data, indent=2, ensure_ascii=False)
     except Exception as e:
-        print(f"[Coder] Không thể tải từ điển công thức tài chính: {e}")
+        print(f"[Coder] Cannot load financial formulas dictionary: {e}")
         return "{}"
 
-CODER_PROMPT = """Bạn là một chuyên gia lập trình Python phân tích tài chính.
-Sử dụng thư viện pandas để xử lý dữ liệu. Chú ý các cột dữ liệu tài chính thường có tên tiếng Việt có dấu. 
+CODER_PROMPT = """You are a specialized Financial Analysis Coder Agent.
+Write Python code using pandas to process the financial data. Note that financial column names might contain Vietnamese diacritics, so handle them correctly.
 
-QUAN TRỌNG: Bạn BẮT BUỘC phải tuân thủ chính xác các công thức tài chính từ từ điển sau, TUYỆT ĐỐI không được tự ý chế công thức:
+IMPORTANT: You MUST strictly adhere to the following financial formulas dictionary; do NOT invent or modify formulas:
 {finance_dict}
 
-QUAN TRỌNG ĐẶC BIỆT VỀ LÀM SẠCH DỮ LIỆU:
-1. Dữ liệu Việt Nam thường dùng dấu chấm làm phân cách hàng ngàn (VD: 1.234.567). Khi viết vào code Python, bạn PHẢI chuyển chúng thành số chuẩn (VD: 1234567).
-2. BẮT BUỘC ép kiểu dữ liệu về dạng số (int/float) TRƯỚC KHI tính toán.
-3. Khi đọc chuỗi số chứa ký tự không xác định, bạn PHẢI dùng: `pd.to_numeric(df['cột'].astype(str).str.replace(r'[^\\d]', '', regex=True), errors='coerce')`
-4. Toàn bộ logic tính toán của bạn PHẢI bọc trong khối `try...except Exception as e:` để nếu fail sẽ `print(f"[Execution Error] {{e}}")` thay vì crash engine.
+IMPORTANT DATA CLEANING RULES:
+1. Vietnamese financial data follows Vietnamese Accounting Standards (VAS) formatting (dot "." for thousands separator, comma "," for decimals, e.g. "1.234.567,89 VND").
+2. To clean such data (especially DataFrame columns containing noise like currency symbols, spaces, or dots/commas), you MUST implement a robust 3-stage normalization pipeline:
+   - Stage 1: Strip currency, spaces, and other noise except digits, dots, commas, and minus signs:
+     `df['col'] = df['col'].astype(str).str.replace(r'[^\\d\\.,-]', '', regex=True)`
+   - Stage 2: Remove the thousands separator dots:
+     `df['col'] = df['col'].str.replace('.', '', regex=False)`
+   - Stage 3: Replace the decimal comma with dot, and cast to numeric:
+     `df['col'] = pd.to_numeric(df['col'].str.replace(',', '.', regex=False), errors='coerce')`
+3. Always verify datatypes and cast using the above 3-stage pipeline before calculations.
+4. Wrap all calculation logic in a `try...except Exception as e:` block to log errors as `print(f"[Execution Error] {{e}}")` instead of crashing.
+5. All text in charts must be in English. Use clear labels, titles, and legends. Do NOT call matplotlib.use() or set rcParams as they are pre-configured by the sandbox.
 
-BẮT BUỘC: Bọc mã Python duy nhất của bạn bên trong một block markdown dạng ```python ... ```.
-Không giải thích ngoài mã nguồn, không có lời nói mở đầu hoặc kết thúc.
+--- FEW-SHOT EXAMPLES ---
+Example 1: Calculate ROE using 3-stage column normalization
+```python
+import pandas as pd
+try:
+    # Context: DataFrame with columns 'Year', 'Net Income', 'Total Equity'
+    # 'Net Income' values: ["120.500.000 VND", "150.000.000,50 VND"]
+    # 'Total Equity' values: ["1.000.000.000 VND", "1.100.000.000,00 VND"]
+    data = {{
+        'Year': ['2023', '2024'],
+        'Net Income': ["120.500.000 VND", "150.000.000,50 VND"],
+        'Total Equity': ["1.000.000.000 VND", "1.100.000.000,00 VND"]
+    }}
+    df = pd.DataFrame(data)
+    
+    # 3-Stage Normalization Pipeline
+    for col in ['Net Income', 'Total Equity']:
+        # Stage 1: Clean noise symbols and spaces
+        df[col] = df[col].astype(str).str.replace(r'[^\\d\\.,-]', '', regex=True)
+        # Stage 2: Remove dot thousands separator
+        df[col] = df[col].str.replace('.', '', regex=False)
+        # Stage 3: Convert decimal comma to dot and cast to float
+        df[col] = pd.to_numeric(df[col].str.replace(',', '.', regex=False), errors='coerce')
+        
+    df['ROE'] = df['Net Income'] / df['Total Equity']
+    for idx, row in df.iterrows():
+        print(f"Year {{row['Year']}} ROE: {{row['ROE']:.4f}} ({{row['ROE']*100:.2f}}%)")
+except Exception as e:
+    print(f"[Execution Error] {{e}}")
+```
 
-Yêu cầu: {question}
-Dữ liệu Context: {context}
+Example 2: Calculate growth rate
+```python
+import pandas as pd
+try:
+    # Context: 2023 Revenue = 500B VND, 2024 Revenue = 600B VND
+    rev_2023 = 500.0
+    rev_2024 = 600.0
+    growth = (rev_2024 - rev_2023) / rev_2023
+    print(f"Revenue Growth: {{growth * 100:.2f}}%")
+except Exception as e:
+    print(f"[Execution Error] {{e}}")
+```
+-------------------------
 
-Quy tắc:
-1. CHỈ trả về một block mã Python ```python ... ```, TUYỆT ĐỐI không giải thích dài dòng hay bình luận tiếng Việt ngoài block code.
-2. Mã phải tự chứa các biến cần thiết từ context.
-3. Sử dụng thư viện matplotlib nếu cần vẽ biểu đồ. QUAN TRỌNG: Lưu file biểu đồ tại đường dẫn chính xác này: {chart_path}
-4. Nếu có lỗi từ lần chạy trước, hãy sửa nó: {last_error}
+REQUIRED: Wrap your Python code within a markdown block: ```python ... ```.
+Do not provide explanations outside the code block, no introductory or concluding text.
 
-Kết quả tính toán cuối cùng của script phải được in ra màn hình bằng câu lệnh print()."""
+Request: {question}
+Context Data: {context}
+
+Rules:
+1. ONLY return a ```python ... ``` markdown block. No explanations or comments outside the code block.
+2. The code must be self-contained and initialize necessary variables from the context.
+3. If drawing a chart, use matplotlib. Save the chart file exactly to this path: {chart_path}
+4. If there was a previous error, fix it: {last_error}
+5. The final output of the script must be printed using print(). All output text and chart text MUST be in English.
+6. If the query requires tabular, time-series, or numerical data comparison, you MUST also output the calculated data as a JSON array (where each element has a "name" field representing the year/period/category, e.g. [{{"name": "2023", "Revenue": 500000.0}}]) wrapped inside a "<json_data>...</json_data>" tag block printed to stdout.
+"""
 
 def pre_sanitize_context(text: str) -> str:
     """
-    Làm sạch các số dạng Việt Nam (VD: 1.234.567 -> 1234567) trong context 
-    để giảm thiểu lỗi cú pháp cho LLM.
+    Clean Vietnamese format numbers (e.g. 1.234.567 -> 1234567) in context 
+    to minimize syntax errors for LLM.
     """
     if not text:
         return text
-    # 1. Khớp nhóm 3 chữ số cách nhau bởi dấu chấm (Hàng triệu): X.XXX.XXX
+    # 1. Match 3 digit groups separated by dot (Millions): X.XXX.XXX
     text = re.sub(r'(\d{1,3})\.(\d{3})\.(\d{3})', lambda m: m.group().replace('.', ''), text)
-    # 2. Khớp dấu chấm hàng nghìn đơn giản: X.XXX
+    # 2. Match simple thousands dot: X.XXX
     text = re.sub(r'\b(\d{1,3})\.(\d{3})\b', lambda m: m.group().replace('.', ''), text)
     return text
 
 def coder_node(state: AgentState, config: RunnableConfig) -> dict:
-    """Node sinh code và thực thi trong sandbox REPL bảo mật."""
+    """Node that generates code and executes it in a secure sandbox REPL."""
     error_count = state.get("error_count", 0)
     question = state["question"]
     raw_context = state["messages"][-1].content if state["messages"] else ""
     context = pre_sanitize_context(raw_context)
-    last_error = state.get("execution_result", "") if error_count > 0 else "None"
+    
+    # Sliding Window Memory Reducer: last_error aggregates up to the last 3 traceback errors
+    last_error = "\n".join(state.get("tracebacks", [])) if state.get("tracebacks") else "None"
 
-    # Lấy session_tmp_dir từ config (đảm bảo an toàn đa người dùng)
+    # Get session_tmp_dir from config (ensures multi-user safety)
     configurable = config.get("configurable", {})
     session_tmp_dir = configurable.get("session_tmp_dir", "tmp")
     chart_path = os.path.join(session_tmp_dir, "chart.png")
 
-    # Load từ điển công thức tài chính
+    # Load financial formulas dictionary
     finance_dict_str = load_finance_dict()
 
-    # 1. Sinh Code
+    # 1. Generate Code
     prompt = ChatPromptTemplate.from_messages([("system", CODER_PROMPT)])
     chain = prompt | llm
     
@@ -93,7 +151,7 @@ def coder_node(state: AgentState, config: RunnableConfig) -> dict:
         "context": context,
         "finance_dict": finance_dict_str,
         "last_error": last_error,
-        "chart_path": chart_path.replace("\\", "/") # Dùng forward slash cho script Python
+        "chart_path": chart_path.replace("\\", "/") # Use forward slash for Python script
     })
     
     code = response.content.strip()
@@ -104,7 +162,7 @@ def coder_node(state: AgentState, config: RunnableConfig) -> dict:
     if code_match:
         code = code_match.group(1).strip()
     else:
-        # Hậu xử lý nếu không có block markdown
+        # Post-processing if there is no markdown block
         lines = code.split('\n')
         cleaned_lines = []
         in_code = False
@@ -118,46 +176,58 @@ def coder_node(state: AgentState, config: RunnableConfig) -> dict:
 
     print(f"[Coder] Attempt {error_count + 1}: Executing generated code...")
     
-    # 2. Thực thi qua Sandbox bảo mật
+    # 2. Execute via secure Sandbox
     repl = SafePythonREPL()
     try:
         exec_res = repl.execute(code)
         
         if not exec_res["success"]:
-            print(f"[Coder] Execution failed with error: {exec_res['error']}")
+            err_msg = exec_res["error"] or exec_res["stderr"] or "Unknown execution error"
+            print(f"[Coder] Execution failed with error: {err_msg}")
             return {
                 "current_code": code,
-                "execution_result": exec_res["error"] or exec_res["stderr"],
+                "execution_result": err_msg,
+                "tracebacks": [err_msg],
                 "error_count": error_count + 1,
-                "steps": [f"🔄 Coder đã thử chạy mã lần {error_count + 1} nhưng gặp lỗi: {exec_res['error'][:50]}..."]
+                "steps": [f"Attempting correction: Coder executed script (attempt {error_count + 1}) but encountered exception: {err_msg[:50]}..."]
             }
 
         print("[Coder] Execution Success.")
         
-        # Lấy kết quả in ra màn hình
+        # Get printed stdout
         result = exec_res["stdout"]
-        # Lấy ảnh biểu đồ dạng base64 nếu có sinh ra
+        # Get base64 chart plot if generated
         plot_b64 = exec_res["plot"]
         
         chart_val = None
         if plot_b64:
-            chart_val = f"data:image/png;base64,{plot_b64}"
+            try:
+                import base64
+                os.makedirs(os.path.dirname(chart_path), exist_ok=True)
+                with open(chart_path, "wb") as f:
+                    f.write(base64.b64decode(plot_b64))
+                chart_val = chart_path
+            except Exception as e:
+                print(f"[Coder Warning] Failed to write base64 plot to {chart_path}: {e}")
+                chart_val = f"data:image/png;base64,{plot_b64}"
         elif os.path.exists(chart_path):
             chart_val = chart_path
 
         return {
             "current_code": code,
             "execution_result": result,
-            "messages": [AIMessage(content=f"Kết quả tính toán:\n{result}")],
+            "messages": [AIMessage(content=f"Calculation result:\n{result}")],
             "error_count": error_count,
             "chart_path": chart_val,
-            "steps": ["🖥️ Coder đã viết và thực thi mã thành công."]
+            "steps": ["Coder executed program successfully."]
         }
     except Exception as e:
-        print(f"[Coder] Runtime Exception: {str(e)}")
+        err_msg = str(e)
+        print(f"[Coder] Runtime Exception: {err_msg}")
         return {
             "current_code": code,
-            "execution_result": str(e),
+            "execution_result": err_msg,
+            "tracebacks": [err_msg],
             "error_count": error_count + 1,
-            "steps": [f"⚠️ Coder gặp lỗi runtime: {str(e)}"]
+            "steps": [f"Coder encountered runtime error: {err_msg}"]
         }

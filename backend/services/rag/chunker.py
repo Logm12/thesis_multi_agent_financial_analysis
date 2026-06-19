@@ -23,9 +23,9 @@ def sanitize_metadata(metadata: dict) -> dict:
 def process_blocks(blocks: list, source_name: str) -> List[Document]:
     """
     Kỹ thuật Semantic Chunking: Đọc danh sách block từ PDF (text, table) 
-    và chia nhỏ văn bản, giữ nguyên bảng biểu nguyên khối.
+    và chia nhỏ văn bản theo trang, giữ nguyên bảng biểu nguyên khối.
     """
-    # Bước 1: Cấu hình splitter
+    import json
     chunk_size = 1000
     chunk_overlap = 150
     text_splitter = RecursiveCharacterTextSplitter(
@@ -34,46 +34,68 @@ def process_blocks(blocks: list, source_name: str) -> List[Document]:
         separators=["\n\n", "\n", ".", " ", ""] 
     )
     
-    headers_to_split_on = [
-        ("#", "Header 1"),
-        ("##", "Header 2"),
-        ("###", "Header 3"),
-    ]
-    markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on)
-
     final_splits = []
     
+    # Nhóm các block văn bản theo trang
+    page_text_map = {}
+    table_blocks = []
+    
     for block in blocks:
-        text = block.get("text", "")
-        if not text.strip():
+        if block.get("type") == "table":
+            table_blocks.append(block)
+        else:
+            page = block.get("page", 1)
+            if page not in page_text_map:
+                page_text_map[page] = []
+            page_text_map[page].append(block)
+            
+    # Thêm các bảng biểu nguyên khối
+    for block in table_blocks:
+        doc = Document(
+            page_content=block["text"],
+            metadata={
+                "page": block["page"],
+                "bbox": block["bbox"],
+                "source": source_name,
+                "type": "table"
+            }
+        )
+        doc.metadata = sanitize_metadata(doc.metadata)
+        final_splits.append(doc)
+        
+    # Xử lý văn bản theo từng trang
+    for page, page_blocks in sorted(page_text_map.items()):
+        # Sắp xếp các block trên trang theo thứ tự từ trên xuống dưới
+        def get_y_coord(b):
+            try:
+                bbox_str = b.get("bbox", "[0, 0, 0, 0]")
+                coords = json.loads(bbox_str)
+                return coords[1]
+            except:
+                return 0
+                
+        page_blocks.sort(key=get_y_coord)
+        
+        # Ghép các block văn bản trên trang
+        combined_text = "\n\n".join([b["text"] for b in page_blocks if b.get("text", "").strip()])
+        if not combined_text.strip():
             continue
             
-        if block.get("type") == "table":
-            # Bảng biểu: Giữ nguyên khối không ngắt
+        # Chia nhỏ đoạn văn bản đã ghép của trang
+        splits = text_splitter.split_text(combined_text)
+        for split_text in splits:
             doc = Document(
-                page_content=text,
+                page_content=split_text,
                 metadata={
-                    "page": block["page"],
-                    "bbox": block["bbox"],
+                    "page": page,
+                    "bbox": page_blocks[0].get("bbox", "[0.0, 0.0, 0.0, 0.0]"),
                     "source": source_name,
-                    "type": "table"
+                    "type": "text"
                 }
             )
             doc.metadata = sanitize_metadata(doc.metadata)
             final_splits.append(doc)
-        else:
-            # Text thông thường: Phân tích header và chunk
-            md_header_splits = markdown_splitter.split_text(text)
-            splits = text_splitter.split_documents(md_header_splits)
             
-            for s in splits:
-                s.metadata["page"] = block["page"]
-                s.metadata["bbox"] = block["bbox"]
-                s.metadata["source"] = source_name
-                s.metadata["type"] = "text"
-                s.metadata = sanitize_metadata(s.metadata)
-                final_splits.append(s)
-                
     return final_splits
 
 if __name__ == "__main__":

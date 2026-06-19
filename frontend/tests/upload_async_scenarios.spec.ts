@@ -22,6 +22,20 @@ test.describe('Async PDF Upload & Coder Agent Chart Plotting E2E Tests (TIP-002 
     }
   });
 
+  test.beforeEach(async ({ page }) => {
+    // Mock authenticated user session
+    await page.route('**/api/v1/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'user-123', email: 'test@example.com', full_name: 'Test User', role: 'USER' })
+      });
+    });
+    await page.route('**/health', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) });
+    });
+  });
+
   test('Scenario 1: Standard digital PDF upload, status polling transitions (pending -> processing -> completed)', async ({ page }) => {
     await page.goto('http://localhost:5173');
 
@@ -58,7 +72,7 @@ test.describe('Async PDF Upload & Coder Agent Chart Plotting E2E Tests (TIP-002 
     await page.locator('#file-upload').setInputFiles(dummyPdf);
 
     // Verify initial uploading toast
-    const loadingBubble = page.locator('text=Đang phân tích tài liệu:');
+    const loadingBubble = page.locator('text=Analyzing document:');
     await expect(loadingBubble).toBeVisible({ timeout: 5000 });
 
     // Verify transitions and final completion bubble text
@@ -173,7 +187,7 @@ test.describe('Async PDF Upload & Coder Agent Chart Plotting E2E Tests (TIP-002 
     });
 
     // Input prompt and click Send
-    await page.locator('input[placeholder*="Hỏi AI về báo cáo tài chính"]').fill('Vẽ biểu đồ doanh thu Vinamilk');
+    await page.locator('input[placeholder*="Ask AI about"]').fill('Vẽ biểu đồ doanh thu Vinamilk');
     await page.locator('button:has(svg.lucide-send)').click();
 
     // Verify reasoning steps detail is populated

@@ -33,8 +33,8 @@ TEMP_DIR.mkdir(parents=True, exist_ok=True)
 EMBEDDING_MODEL = "text-embedding-3-small"
 EMBEDDING_DIM = 768  # Match current ChromaDB
 
-ROUTER_MODEL = "gpt-5.4-mini"
-SYNTHESIZER_MODEL = "gpt-5.4-mini"
+ROUTER_MODEL = "gpt-4o-mini"
+SYNTHESIZER_MODEL = "meta/llama-3.3-70b-instruct"
 CODER_MODEL = "qwen2.5-coder-thesis:latest"
 
 # Ollama configuration

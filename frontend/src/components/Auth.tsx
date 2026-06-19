@@ -60,28 +60,28 @@ export const Auth = () => {
   };
 
   return (
-    <div className="flex-1 min-h-screen flex items-center justify-center bg-slate-950 p-6 relative overflow-hidden select-none">
+    <div className="flex-1 min-h-screen flex items-center justify-center bg-slate-50 p-6 relative overflow-hidden select-none">
       {/* Background Decorative Blobs */}
-      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-900/10 blur-[120px]" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-blue-900/10 blur-[120px]" />
+      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-100/50 blur-[120px]" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-blue-100/50 blur-[120px]" />
 
-      <div className="w-full max-w-md bg-slate-900/40 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-8 shadow-2xl relative z-10">
+      <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-8 shadow-2xl relative z-10">
         {/* Logo and Header */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-4 animate-pulse">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-100 tracking-tight">
+          <h2 className="text-2xl font-bold text-slate-850 tracking-tight">
             {isLogin ? 'Welcome Back' : 'Create Account'}
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             {isLogin ? 'Sign in to access your financial analysis' : 'Get started with Lumo AI Financial Analyzer'}
           </p>
         </div>
 
         {/* Form Alerts */}
         {(formError || error) && (
-          <div className="mb-6 p-4 bg-red-950/40 border border-red-800/60 rounded-2xl text-xs text-red-300 leading-relaxed">
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-750 leading-relaxed font-medium">
             {formError || error}
           </div>
         )}
@@ -90,7 +90,7 @@ export const Auth = () => {
           {/* Full Name field for registration */}
           {!isLogin && (
             <div className="space-y-1.5">
-              <label htmlFor="fullName" className="text-xs font-semibold text-slate-300">
+              <label htmlFor="fullName" className="text-xs font-semibold text-slate-600">
                 Full Name
               </label>
               <input
@@ -99,14 +99,14 @@ export const Auth = () => {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="John Doe"
-                className="w-full px-4 py-3 bg-slate-800/20 border border-slate-700/60 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200"
+                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-all duration-200"
                 disabled={isLoading}
               />
             </div>
           )}
 
           <div className="space-y-1.5">
-            <label htmlFor="email" className="text-xs font-semibold text-slate-300">
+            <label htmlFor="email" className="text-xs font-semibold text-slate-600">
               Email Address
             </label>
             <input
@@ -115,13 +115,13 @@ export const Auth = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@company.com"
-              className="w-full px-4 py-3 bg-slate-800/20 border border-slate-700/60 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all duration-200"
+              className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-all duration-200"
               disabled={isLoading}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="password" className="text-xs font-semibold text-slate-300">
+            <label htmlFor="password" className="text-xs font-semibold text-slate-600">
               Password
             </label>
             <div className="relative">
@@ -131,13 +131,13 @@ export const Auth = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 bg-slate-800/20 border border-slate-700/60 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 pr-12 transition-all duration-200"
+                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 pr-12 transition-all duration-200"
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 px-4 flex items-center text-slate-400 hover:text-slate-200"
+                className="absolute inset-y-0 right-0 px-4 flex items-center text-slate-400 hover:text-slate-600"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -161,11 +161,11 @@ export const Auth = () => {
 
         {/* Switch tabs */}
         <div className="mt-8 text-center">
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}
             <button
               onClick={() => { setIsLogin(!isLogin); clearError(); }}
-              className="text-indigo-400 hover:text-indigo-300 font-semibold ml-1 focus:outline-none"
+              className="text-indigo-600 hover:text-indigo-500 font-semibold ml-1 focus:outline-none"
               disabled={isLoading}
             >
               {isLogin ? 'Create one' : 'Sign in'}

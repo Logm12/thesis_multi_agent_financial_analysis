@@ -15,6 +15,7 @@ const KnowledgeManagement: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [toast, setToast] = useState<{ message: string; type: 'info' | 'success' | 'error' } | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [localPath, setLocalPath] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const showToast = (message: string, type: 'info' | 'success' | 'error') => {
@@ -30,7 +31,30 @@ const KnowledgeManagement: React.FC = () => {
       setDocuments(response.data);
     } catch (error) {
       console.error('Error fetching documents:', error);
-      showToast('Lỗi khi tải danh sách tài liệu.', 'error');
+      showToast('Error loading document list.', 'error');
+    }
+  };
+
+  const handlePathUpload = async () => {
+    if (!localPath.trim()) {
+      showToast('Vui lòng nhập đường dẫn tệp PDF.', 'error');
+      return;
+    }
+    setProcessing(true);
+    showToast('Đang yêu cầu nạp tài liệu...', 'info');
+    try {
+      const response = await apiClient.post('/upload-by-path', {
+        file_path: localPath.trim()
+      });
+      showToast('Đang phân tích và bóc tách bố cục tài liệu...', 'info');
+      fetchDocuments();
+      pollStatus(response.data.task_id);
+      setLocalPath('');
+    } catch (error: any) {
+      console.error('Path upload error:', error);
+      const errMsg = error.response?.data?.detail || 'Lỗi nạp tài liệu từ đường dẫn local.';
+      showToast(errMsg, 'error');
+      setProcessing(false);
     }
   };
 
@@ -40,7 +64,7 @@ const KnowledgeManagement: React.FC = () => {
 
   const pollStatus = (taskId: string) => {
     if (!taskId || taskId === 'undefined') {
-      showToast('Lỗi: Mã tiến trình không hợp lệ.', 'error');
+      showToast('Error: Invalid process task ID.', 'error');
       setProcessing(false);
       return;
     }
@@ -52,7 +76,7 @@ const KnowledgeManagement: React.FC = () => {
       attempts++;
       if (attempts > maxAttempts) {
         clearInterval(interval);
-        showToast('Hết thời gian chờ xử lý tài liệu.', 'error');
+        showToast('Document processing timed out.', 'error');
         setProcessing(false);
         fetchDocuments();
         return;
@@ -64,31 +88,36 @@ const KnowledgeManagement: React.FC = () => {
 
         if (status === 'completed') {
           clearInterval(interval);
-          showToast('Tài liệu đã được phân tích và đánh chỉ mục thành công!', 'success');
+          showToast('Document analyzed and indexed successfully!', 'success');
           setProcessing(false);
           fetchDocuments(); // Refresh complete list
         } else if (status === 'failed') {
           clearInterval(interval);
-          showToast(`Xử lý thất bại: ${details || 'Lỗi không xác định'}`, 'error');
+          showToast(`Processing failed: ${details || 'Unknown error'}`, 'error');
           setProcessing(false);
           fetchDocuments(); // Refresh failed state
         }
       } catch (error) {
         console.error('Polling error:', error);
+        clearInterval(interval);
+        setProcessing(false);
+        fetchDocuments();
       }
     }, 2000);
   };
 
+
+
   const uploadFile = async (file: File) => {
     const isPdf = file.name.toLowerCase().endsWith('.pdf') && (file.type === 'application/pdf' || file.type === '');
     if (!isPdf) {
-      showToast('File không hợp lệ. Vui lòng chỉ tải lên báo cáo định dạng PDF.', 'error');
+      showToast('Invalid file. Please upload a PDF document only.', 'error');
       return;
     }
 
     const MAX_SIZE = 100 * 1024 * 1024; // 100MB
     if (file.size > MAX_SIZE) {
-      showToast('Kích thước file quá lớn. Vui lòng tải lên file nhỏ hơn 100MB.', 'error');
+      showToast('File too large. Please upload a file under 100MB.', 'error');
       return;
     }
 
@@ -96,17 +125,17 @@ const KnowledgeManagement: React.FC = () => {
     formData.append('file', file);
 
     setProcessing(true);
-    showToast(`Đang tải lên tài liệu: ${file.name}...`, 'info');
+    showToast(`Uploading document: ${file.name}...`, 'info');
 
     try {
       const response = await apiClient.post('/upload-pdf', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      showToast('Đang phân tích và trích xuất tài liệu...', 'info');
+      showToast('Analyzing and extracting document layout...', 'info');
       fetchDocuments(); // Fetch 'processing' status
       pollStatus(response.data.task_id);
     } catch (error) {
-      showToast('Lỗi khi tải tài liệu lên. Vui lòng thử lại.', 'error');
+      showToast('Error uploading document. Please try again.', 'error');
       setProcessing(false);
     }
   };
@@ -118,30 +147,30 @@ const KnowledgeManagement: React.FC = () => {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (window.confirm(`Bạn có chắc chắn muốn xóa tài liệu "${name}"? Thao tác này sẽ xóa vĩnh viễn dữ liệu tri thức tương ứng.`)) {
+    if (window.confirm(`Are you sure you want to delete document "${name}"? This action will permanently remove its knowledge base index.`)) {
       try {
-        showToast('Đang tiến hành xóa tài liệu...', 'info');
+        showToast('Deleting document...', 'info');
         await apiClient.delete(`/documents/${id}`);
-        showToast('Đã xóa tài liệu và đồng bộ lại tri thức thành công!', 'success');
+        showToast('Document deleted and knowledge base updated successfully!', 'success');
         fetchDocuments();
       } catch (error) {
         console.error('Delete error:', error);
-        showToast('Không thể xóa tài liệu. Vui lòng thử lại.', 'error');
+        showToast('Failed to delete document. Please try again.', 'error');
       }
     }
   };
 
   const handleRename = async (id: string, currentName: string) => {
-    const newName = window.prompt('Nhập tên hiển thị mới cho tài liệu:', currentName);
+    const newName = window.prompt('Enter new display name for the document:', currentName);
     if (newName && newName.trim() !== '' && newName !== currentName) {
       try {
-        showToast('Đang đổi tên tài liệu...', 'info');
+        showToast('Renaming document...', 'info');
         await apiClient.patch(`/documents/${id}`, { name: newName });
-        showToast('Cập nhật tên tài liệu thành công!', 'success');
+        showToast('Document renamed successfully!', 'success');
         fetchDocuments();
       } catch (error) {
         console.error('Rename error:', error);
-        showToast('Lỗi khi đổi tên tài liệu.', 'error');
+        showToast('Failed to rename document.', 'error');
       }
     }
   };
@@ -159,16 +188,34 @@ const KnowledgeManagement: React.FC = () => {
             <Database className="w-6 h-6 text-indigo-600" />
             Knowledge Base
           </h1>
-          <p className="text-sm text-slate-500 mt-1">Quản lý tài liệu và dữ liệu tri thức của hệ thống phân tích báo cáo tài chính.</p>
+          <p className="text-sm text-slate-500 mt-1">Manage documents and database knowledge nodes for financial analysis.</p>
         </div>
-        <button 
-          onClick={() => fileInputRef.current?.click()}
-          disabled={processing}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-100 transition-all duration-200"
-        >
-          <Plus className="w-4 h-4" />
-          {processing ? 'Đang xử lý...' : 'Thêm tài liệu'}
-        </button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center bg-white border border-slate-200 rounded-xl px-2 py-1 shadow-sm">
+            <input
+              type="text"
+              placeholder="Local path to PDF (e.g. E:\Thesis\data\test_pdfs_scanned\VNM_Q3-2025_4.pdf)"
+              value={localPath}
+              onChange={(e) => setLocalPath(e.target.value)}
+              className="text-xs bg-transparent border-none outline-none w-80 px-2 py-1 text-slate-800"
+            />
+            <button
+              onClick={handlePathUpload}
+              disabled={processing}
+              className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 disabled:opacity-50 text-indigo-600 text-xs font-semibold rounded-lg transition-all whitespace-nowrap"
+            >
+              Ingest Path
+            </button>
+          </div>
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            disabled={processing}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-100 transition-all duration-200"
+          >
+            <Plus className="w-4 h-4" />
+            {processing ? 'Processing...' : 'Add Document'}
+          </button>
+        </div>
         <input 
           type="file"
           ref={fileInputRef}
@@ -181,20 +228,20 @@ const KnowledgeManagement: React.FC = () => {
       {/* Stats row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tổng số tài liệu</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Documents</p>
           <p className="text-2xl font-bold text-slate-900 mt-2">{documents.length}</p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Trạng thái đồng bộ</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sync Status</p>
           <div className="flex items-center gap-2 mt-2">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <p className="text-sm font-bold text-slate-900">
-              {documents.filter(d => d.status === 'indexed').length} / {documents.length} Đã đánh chỉ mục
+              {documents.filter(d => d.status === 'indexed').length} / {documents.length} Indexed
             </p>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Bộ nhớ sử dụng</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Storage Used</p>
           <p className="text-2xl font-bold text-slate-900 mt-2">
             {(documents.reduce((acc, doc) => acc + (parseFloat(doc.size) || 0), 0)).toFixed(1)} MB
           </p>
@@ -208,7 +255,7 @@ const KnowledgeManagement: React.FC = () => {
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input 
               type="text" 
-              placeholder="Tìm kiếm tài liệu..."
+              placeholder="Search documents..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
@@ -219,7 +266,7 @@ const KnowledgeManagement: React.FC = () => {
             className="flex items-center gap-2 px-3 py-2 text-slate-500 hover:text-slate-800 text-sm font-medium hover:bg-slate-50 rounded-xl transition-all"
           >
             <RefreshCw className="w-4 h-4" />
-            Làm mới danh sách
+            Refresh List
           </button>
         </div>
 
@@ -228,11 +275,11 @@ const KnowledgeManagement: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                <th className="px-6 py-4">Tên tài liệu</th>
-                <th className="px-6 py-4">Dung lượng</th>
-                <th className="px-6 py-4">Ngày tải lên</th>
-                <th className="px-6 py-4">Trạng thái</th>
-                <th className="px-6 py-4 text-right">Thao tác</th>
+                <th className="px-6 py-4">Document Name</th>
+                <th className="px-6 py-4">Size</th>
+                <th className="px-6 py-4">Uploaded At</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm text-slate-600">
@@ -269,14 +316,14 @@ const KnowledgeManagement: React.FC = () => {
                       <button 
                         onClick={() => handleRename(doc.id, doc.name)}
                         className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                        title="Sửa tên tài liệu"
+                        title="Rename document"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDelete(doc.id, doc.name)}
                         className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                        title="Xóa tài liệu"
+                        title="Delete document"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -287,7 +334,7 @@ const KnowledgeManagement: React.FC = () => {
               {filteredDocs.length === 0 && (
                 <tr>
                   <td colSpan={5} className="text-center py-12 text-slate-400 italic">
-                    Không tìm thấy tài liệu phù hợp.
+                    No matching documents found.
                   </td>
                 </tr>
               )}

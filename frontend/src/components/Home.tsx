@@ -49,10 +49,9 @@ const Home: React.FC = () => {
         <MainContent />
       </div>
       
-      {/* Resizable drag divider */}
       <div 
         onMouseDown={handleMouseDown}
-        className="w-1.5 hover:w-2 hover:bg-indigo-500/50 active:bg-indigo-600 transition-all cursor-col-resize shrink-0 h-full bg-slate-200 dark:bg-slate-800 border-l border-r border-slate-350 dark:border-slate-850 z-20"
+        className="w-1.5 hover:w-2 hover:bg-indigo-500/50 active:bg-indigo-600 transition-all cursor-col-resize shrink-0 h-full bg-slate-200 border-l border-r border-slate-300 z-20"
       />
       
       <div style={{ width: `${rightWidth}px` }} className="shrink-0 h-full">

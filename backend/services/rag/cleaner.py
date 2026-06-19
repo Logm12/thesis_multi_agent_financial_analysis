@@ -70,12 +70,17 @@ def clean_vietnamese_text(text: str) -> str:
         # Thay thế cả version in hoa toàn bộ của RapidOCR
         text = text.replace(wrong.upper(), right.upper())
         
-    # 8. Chuẩn hóa số tiền VNĐ (VD: 1.000.000 -> 1000000.0)
-    # Tìm các số có dạng d.ddd.ddd (dấu chấm phân cách hàng nghìn)
+    # 8. Chuẩn hóa số tiền VNĐ (VD: 1.250.000,50 -> 1250000.50 hoặc 1.250.000 -> 1250000.0)
     def replace_vnd_number(match):
-        num_str = match.group(0).replace('.', '')
-        return f"{num_str}.0"
+        val = match.group(0)
+        # Nếu có dấu phẩy thập phân
+        if ',' in val:
+            val = val.replace('.', '').replace(',', '.')
+        else:
+            val = val.replace('.', '') + '.0'
+        return val
     
-    text = re.sub(r'\b\d{1,3}(?:\.\d{3})+\b', replace_vnd_number, text)
+    # Khớp các số có dạng d.ddd.ddd,dd hoặc d.ddd.ddd (dấu chấm là hàng nghìn) hoặc d,dd (dấu phẩy là thập phân đơn lẻ)
+    text = re.sub(r'\b\d{1,3}(?:\.\d{3})+(?:,\d+)?\b|\b\d+,\d+\b', replace_vnd_number, text)
     
     return text.strip()

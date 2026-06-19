@@ -2,6 +2,18 @@ import { test, expect } from '@playwright/test';
 
 test.describe('TIP-QA-004 Interactive Visual Grounding E2E Suite', () => {
   test('Scenario 1: Drag Divider Resizing should modify Right Panel width within limits', async ({ page }) => {
+    // Mock authenticated user session
+    await page.route('**/api/v1/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'user-123', email: 'test@example.com', full_name: 'Test User', role: 'USER' })
+      });
+    });
+    await page.route('**/health', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) });
+    });
+
     // 1. Mock available documents and metadata API endpoints using wildcards
     await page.route('**/api/v1/documents', async (route) => {
       await route.fulfill({
@@ -40,7 +52,7 @@ test.describe('TIP-QA-004 Interactive Visual Grounding E2E Suite', () => {
 
     page.on('console', msg => console.log('[BROWSER CONSOLE S1]:', msg.text()));
 
-    await page.goto('http://localhost:5174');
+    await page.goto('http://localhost:5173');
 
     // 2. Inject CSS to ensure html, body, root, and layout elements have a valid height in headless browser testing
     await page.addStyleTag({
@@ -126,6 +138,18 @@ test.describe('TIP-QA-004 Interactive Visual Grounding E2E Suite', () => {
   });
 
   test('Scenario 2: Clicking interactive citation should auto-scroll PDF view, update page index, and overlay high-contrast bounding box', async ({ page }) => {
+    // Mock authenticated user session
+    await page.route('**/api/v1/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'user-123', email: 'test@example.com', full_name: 'Test User', role: 'USER' })
+      });
+    });
+    await page.route('**/health', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) });
+    });
+
     // 1. Mock available documents, document info, page image, and text layout blocks using wildcards
     await page.route('**/api/v1/documents', async (route) => {
       await route.fulfill({
@@ -181,7 +205,7 @@ test.describe('TIP-QA-004 Interactive Visual Grounding E2E Suite', () => {
         contentType: 'text/event-stream',
         body: [
           'event: final_answer\n',
-          'data: {"content": "Theo [Trang 2, BaoCao_FPT_2023.pdf], lợi nhuận của doanh nghiệp được cải thiện rực rỡ."}\n\n',
+          'data: {"content": "According to [Page 2, BaoCao_FPT_2023.pdf], corporate profit improved spectacularly."}\n\n',
           'event: done\n',
           'data: end\n\n'
         ].join('')
@@ -190,7 +214,7 @@ test.describe('TIP-QA-004 Interactive Visual Grounding E2E Suite', () => {
 
     page.on('console', msg => console.log('[BROWSER CONSOLE S2]:', msg.text()));
 
-    await page.goto('http://localhost:5174');
+    await page.goto('http://localhost:5173');
 
     // Inject CSS to ensure html, body, root, and layout elements have a valid height
     await page.addStyleTag({
@@ -203,12 +227,12 @@ test.describe('TIP-QA-004 Interactive Visual Grounding E2E Suite', () => {
     });
 
     // Send chat query to trigger response rendering
-    const input = page.locator('input[placeholder*="Hỏi AI về báo cáo"]');
+    const input = page.locator('input[placeholder*="Ask AI about"]');
     await input.fill('Phân tích lợi nhuận FPT');
     await input.press('Enter');
 
     // Wait and assert chat bubble rendered the custom visual citation span
-    const citationLink = page.locator('span:has-text("Trang 2, BaoCao_FPT_2023.pdf")');
+    const citationLink = page.locator('span:has-text("Page 2, BaoCao_FPT_2023.pdf")');
     await expect(citationLink).toBeVisible({ timeout: 5000 });
 
     // Click interactive citation with programmatic event click fallback to ensure execution
@@ -219,7 +243,7 @@ test.describe('TIP-QA-004 Interactive Visual Grounding E2E Suite', () => {
     }
 
     await page.evaluate(() => {
-      const span = Array.from(document.querySelectorAll('span')).find(el => el.textContent?.includes('Trang 2, BaoCao_FPT_2023.pdf'));
+      const span = Array.from(document.querySelectorAll('span')).find(el => el.textContent?.includes('Page 2, BaoCao_FPT_2023.pdf'));
       if (span) {
         (span as any).click();
       }
@@ -227,7 +251,7 @@ test.describe('TIP-QA-004 Interactive Visual Grounding E2E Suite', () => {
 
     // Assert active page transitions to Page 2
     const rightPanel = page.locator('[data-testid="right-panel"]');
-    await expect(rightPanel).toContainText('Trang 2 / 5', { timeout: 10000 });
+    await expect(rightPanel).toContainText('Page 2 / 5', { timeout: 10000 });
 
     // Assert that dynamic absolute highlight bounding box overlay is visible on the image!
     const highlightBbox = page.locator('.border-2.border-red-500.bg-red-500\\/15');

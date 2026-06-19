@@ -51,11 +51,16 @@ async function mockAuthenticated(page: any, user = MOCK_ADMIN_USER) {
   );
 }
 
+test.beforeEach(({ page }) => {
+  page.on('console', msg => console.log(`[AUTH BROWSER CONSOLE ${msg.type()}]:`, msg.text()));
+  page.on('pageerror', err => console.error('[AUTH BROWSER PAGE ERROR]:', err));
+});
+
 // ─── 1. Form Rendering ────────────────────────────────────────────────────
 test.describe('1. Auth: Login Form Rendering', () => {
   test('should render login form with email/password inputs', async ({ page }) => {
     await mockUnauthenticated(page);
-    await page.goto('/');
+    await page.goto('/#/login');
 
     await expect(page.getByRole('heading', { name: /Welcome Back/i })).toBeVisible({ timeout: 8000 });
     await expect(page.locator('#email')).toBeVisible();
@@ -67,7 +72,7 @@ test.describe('1. Auth: Login Form Rendering', () => {
 
   test('should switch to Register form via "Create one" button', async ({ page }) => {
     await mockUnauthenticated(page);
-    await page.goto('/');
+    await page.goto('/#/login');
 
     await page.getByRole('button', { name: 'Create one' }).click();
 
@@ -92,7 +97,7 @@ test.describe('2. Auth: Login Error Handling', () => {
       })
     );
 
-    await page.goto('/');
+    await page.goto('/#/login');
     await page.locator('#email').fill('wrong@example.com');
     await page.locator('#password').fill('wrongpass');
 
@@ -121,7 +126,7 @@ test.describe('2. Auth: Login Error Handling', () => {
       })
     );
 
-    await page.goto('/');
+    await page.goto('/#/login');
     await page.locator('#email').fill('test@lumo.ai');
     await page.locator('#password').fill('password123');
 
@@ -141,7 +146,7 @@ test.describe('2. Auth: Login Error Handling', () => {
 
   test('should show client-side validation for empty fields', async ({ page }) => {
     await mockUnauthenticated(page);
-    await page.goto('/');
+    await page.goto('/#/login');
 
     // Click submit with nothing filled
     await page.getByRole('button', { name: 'Sign In' }).click();
@@ -181,7 +186,7 @@ test.describe('3. Auth: Successful Login Flow', () => {
       route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) })
     );
 
-    await page.goto('/');
+    await page.goto('/#/login');
 
     // Login form should be showing
     await expect(page.getByRole('heading', { name: /Welcome Back/i })).toBeVisible({ timeout: 5000 });
@@ -292,14 +297,15 @@ test.describe('5. Auth: Admin Route Protection', () => {
       })
     );
 
-    // Use hash URL for HashRouter — /admin is /#/admin
-    await page.goto('/#/admin');
-
-    // Wait for admin stats request to complete
-    await page.waitForResponse(
+    // Wait for admin stats request to complete (setup promise before navigation)
+    const statsResponsePromise = page.waitForResponse(
       (resp: any) => resp.url().includes('/api/v1/auth/admin/stats'),
       { timeout: 10000 }
     );
+
+    // Use hash URL for HashRouter — /admin is /#/admin
+    await page.goto('/#/admin');
+    await statsResponsePromise;
 
     // Header visible
     await expect(page.getByRole('heading', { name: /admin dashboard/i })).toBeVisible({ timeout: 8000 });

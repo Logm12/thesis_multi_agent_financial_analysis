@@ -116,16 +116,16 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: async () => {
     set({ isLoading: true });
-    try {
-      await fetch(`${API_URL}/api/v1/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch (err) {
+    // Fire-and-forget background logout API request
+    fetch(`${API_URL}/api/v1/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    }).catch((err) => {
       console.error('Logout request failed:', err);
-    } finally {
-      localStorage.setItem('logout-event', Date.now().toString());
-      set({ user: null, isAuthenticated: false, isLoading: false });
-    }
+    });
+
+    window.location.hash = '/login';
+    localStorage.setItem('logout-event', Date.now().toString());
+    set({ user: null, isAuthenticated: false, isLoading: false });
   },
 }));

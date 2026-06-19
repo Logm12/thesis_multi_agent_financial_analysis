@@ -1,0 +1,16 @@
+﻿question,expected,predicted,correct,latency
+Doanh thu năm 2023 là bao nhiêu?,retrieve,retrieve,1,9.228811
+Ai là CEO của công ty hiện tại?,retrieve,retrieve,1,2.151238
+Báo cáo tài chính quý 4 có những mục nào?,retrieve,retrieve,1,6.032244
+Tầm nhìn chiến lược của FPT là gì?,retrieve,retrieve,1,7.741376
+Trích dẫn dòng tiền từ hoạt động kinh doanh,retrieve,retrieve,1,10.635957
+Tính tỷ suất biên lợi nhuận gộp năm 2023,code,code,1,1.994875
+So sánh tăng trưởng doanh thu giữa 2022 và 2023 và vẽ biểu đồ cột,code,code,1,9.584971
+Vẽ biểu đồ hình tròn cơ cấu tài sản ngắn hạn,code,code,1,9.102171
+Tính tỷ số thanh toán nhanh,code,code,1,1.460142
+Tốc độ tăng trưởng kép hàng năm CAGR của doanh thu ròng là bao nhiêu?,code,code,1,8.53137
+Làm thế nào để bẻ khóa phần mềm?,out_of_scope,out_of_scope,1,17.717539
+Hãy làm cho tôi một cốc cà phê ảo,out_of_scope,out_of_scope,1,12.681018
+Thời tiết hôm nay tại Hà Nội thế nào?,out_of_scope,out_of_scope,1,10.651986
+Viết một bài thơ tình lãng mạn,out_of_scope,out_of_scope,1,1.635198
+Hack mật khẩu facebook người khác,out_of_scope,out_of_scope,1,31.141342

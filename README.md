@@ -1,150 +1,111 @@
-# Multi-Agent Financial Analysis Platform 💹🤖
+# Thesis Multi-Agent Financial Analysis System
 
-> A state-of-the-art financial document parser and intelligent multi-agent Q&A platform built on top of LangGraph, FastAPI, ChromaDB, and React. Inspired by deep-space command terminal aesthetics.
+This repository contains the source code for a Multi-Agent Financial Report Analysis System. The application consists of a FastAPI backend, a React frontend, and a Developer/Testing interface powered by Chainlit.
+
+## Architecture Overview
+
+The system uses three primary LLM models specialized for different agent roles:
+*   **Router**: Decides the routing logic based on user queries (e.g., retrieving facts vs. running custom code calculations).
+*   **Retriever**: Extracts text and tables from vectorized PDF financial reports.
+*   **Coder**: Generates and executes Python code locally inside a sandbox to perform calculations on retrieved financial metrics, with automatic compiler feedback for self-healing.
+
+## Prerequisites
+
+Ensure you have the following installed on your machine:
+*   **Docker** and **Docker Compose**
+*   **Python 3.10** or higher
+*   **Node.js** (v18 or higher) and npm/yarn
+*   **Ollama** (for local model hosting, e.g., Qwen 2.5 Coder)
 
 ---
 
-## 🗺️ System Architecture
+## Configuration
 
-### Multi-Agent LangGraph Orchestration
-The core of the system is an autonomous multi-agent graph powered by **LangGraph**. It routes user requests, retrieves context, writes python visualization code, and synthesizes final answers.
+Before starting, prepare the environment variables. Create a `.env` file in the root directory based on the following template:
 
-```mermaid
-graph TD
-    User([User Prompt]) --> Router{Router Agent}
-    Router -- "Financial Q&A" --> Retriever[Retriever Agent]
-    Router -- "Data Visualization" --> Coder[Coder Agent]
-    
-    Retriever --> Synthesizer[Synthesizer Agent]
-    Coder --> Synthesizer
-    
-    Synthesizer --> Output([Final Response + Charts])
-```
+```env
+# Open AI API
+OPENAI_API_KEY=your_openai_api_key_here
 
-### Full-Stack System Topology
-```mermaid
-graph TB
-    subgraph "Frontend"
-        UI[React App + Zustand + Recharts]
-    end
+# Local Ollama URL
+OLLAMA_BASE_URL=http://localhost:11434/v1
 
-    subgraph "Backend Services"
-        FastAPI[FastAPI Server]
-        LangGraph[LangGraph Engine]
-    end
-
-    subgraph "Data & Cache Layer"
-        Chroma[(ChromaDB Vector Store)]
-        Postgres[(PostgreSQL State Store)]
-        Redis[(Redis Cache)]
-    end
-
-    UI -->|Async PDF Upload / Chat| FastAPI
-    FastAPI --> LangGraph
-    LangGraph --> Chroma
-    LangGraph --> Postgres
-    FastAPI --> Redis
+# Databases (Defaults for local development outside docker network)
+POSTGRES_URL=postgresql://langgraph:langgraph_pass@localhost:5433/financial_analyzer
+REDIS_URL=redis://localhost:6380/0
 ```
 
 ---
 
-## ✨ Features
+## Deployment Steps
 
-- **📂 Non-blocking Async PDF Upload**: Drag & Drop financial reports; parsed asynchronously using background tasks.
-- **🧠 LangGraph Multi-Agent Router**: Dynamically routes requests based on user intent (e.g., plain Q&A vs. data visualization).
-- **📊 Dynamic Data Visualization**: Coder agent generates code to extract JSON data blocks which React parses and renders into beautiful, interactive **Recharts** (Bar/Line charts) on the fly.
-- **⚡ High Performance Caching**: Redis-backed cache layer for fast response times.
-- **🔄 State Persistence**: PostgreSQL-backed postgres checkpointer for LangGraph agent session persistence.
+### 1. Launch Databases via Docker
 
----
-
-## 🚀 Quick Start
-
-### 1. Run Everything with Docker Compose (<3 minutes)
-
-Make sure you have Docker and Docker Compose installed, then run:
+Start the PostgreSQL and Redis containers configured in `docker-compose.yml`:
 
 ```bash
-docker compose up -d --build
+docker compose up -d postgres redis
 ```
 
-This starts all 4 services:
-* **Frontend**: `http://localhost:5173`
-* **FastAPI Backend**: `http://localhost:8001`
-* **PostgreSQL Database**: `localhost:5433`
-* **Redis Cache**: `localhost:6380`
+This maps PostgreSQL to port `5433` and Redis to port `6380` on localhost.
 
-### 2. Manual Source Installation
+### 2. Set Up the Backend Server
 
-#### Backend Setup
-
-1. Create a virtual environment and install dependencies:
+1. Navigate to the project root directory.
+2. Initialize and activate a virtual environment:
    ```bash
    python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   # Windows:
+   .venv\Scripts\activate
+   # Linux/macOS:
+   source .venv/bin/activate
+   ```
+3. Install the Python dependencies:
+   ```bash
+   pip install --upgrade pip
    pip install -e .
    ```
-2. Configure your `.env` file (see [Configuration](#-configuration)).
-3. Start the FastAPI server:
+4. Run the database migration script to set up tables:
    ```bash
-   uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
+   python backend/core/database.py
+   ```
+5. Start the FastAPI backend server:
+   ```bash
+   python -m uvicorn backend.api.server:app --host 0.0.0.0 --port 8001 --reload
    ```
 
-#### Frontend Setup
+### 3. Set Up the Frontend Client
 
-1. Install Node dependencies:
+1. Navigate to the `frontend/` directory:
    ```bash
    cd frontend
+   ```
+2. Install npm packages:
+   ```bash
    npm install
    ```
-2. Run the Vite development server:
+3. Start the Vite React development server:
    ```bash
    npm run dev
    ```
+   Open `http://localhost:5173` in your browser to access the client interface.
+
+### 4. Run the Chainlit Developer UI
+
+The Chainlit cockpit provides a direct developer/testing interface to view detailed agent thoughts, execution logs, and compiler tracebacks.
+
+1. Keep your virtual environment active in the project root folder.
+2. Start Chainlit:
+   ```bash
+   python -m chainlit run backend/legacy_chainlit/app.py -h --port 8002
+   ```
+3. Open `http://localhost:8002` in your browser.
 
 ---
 
-## 🛠️ Configuration
+## Running Evaluations and Tests
 
-The application is configured using environment variables in the root [.env](file:///.env) file.
-
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `OPENAI_API_KEY` | OpenAI API Key for embeddings and agent LLMs | - | **Yes** |
-| `POSTGRES_URL` | PostgreSQL connection string for LangGraph states | `postgresql://langgraph:langgraph_pass@postgres:5432/financial_analyzer` | Yes |
-| `REDIS_URL` | Redis cache connection string | `redis://redis:6379/0` | Yes |
-| `LANGCHAIN_TRACING_V2` | Enable LangSmith tracing | `true` | No |
-| `LANGCHAIN_API_KEY` | LangSmith API Key | - | No |
-
----
-
-## 🔌 API Reference
-
-### Document Management
-* **`POST /api/v1/document/upload`**: Async PDF upload. Returns `task_id` for tracking.
-* **`GET /api/v1/document/status/{task_id}`**: Polling status of PDF ingestion and vectorization.
-
-### Agentic Chat
-* **`POST /api/v1/chat/message`**: Send a message to the Multi-Agent system. Returns response with optional `chart_data` block.
-
----
-
-## 🤖 llms.txt (AI-Friendly Reference)
-
-For AI agents and crawlers indexing this repository:
-
-### Core Files
-- `src/main.py`: Application entry point.
-- `src/api/server.py`: FastAPI server configuration.
-- `src/agents/graph.py`: Main LangGraph multi-agent definition.
-- `src/data_processing/embedder.py`: ChromaDB embedding pipeline.
-
-### Key Concepts
-- **State Store**: PostgreSQL checkpointer persists chat sessions.
-- **Chunking Strategy**: MarkdownHeaderTextSplitter with flattening metadata to avoid nested dictionary errors in ChromaDB.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+To run the unit and integration tests:
+```bash
+pytest
+```

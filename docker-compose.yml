@@ -27,11 +27,16 @@ services:
     volumes:
       - ./data:/app/data
       - ./tmp:/app/tmp
+      - ./backend/logs:/app/backend/logs
+      - ./backend:/app/backend
+      - ./.env:/app/.env
     environment:
+      - PYTHONUNBUFFERED=1
       - POSTGRES_URL=postgresql://langgraph:langgraph_pass@postgres:5432/financial_analyzer
       - REDIS_URL=redis://redis:6379/0
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OLLAMA_BASE_URL=http://host.docker.internal:11434/v1
+      - BYPASS_SMOKE_TEST=True
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

@@ -20,92 +20,92 @@
   {
     "id": "TC_004",
     "category": "Basic_Retrieval",
-    "question": "Ai là Chủ tịch Hội đồng Quản trị của VNM trong năm 2023?",
-    "ground_truth": "Chủ tịch HĐQT của Vinamilk năm 2023 là bà Lê Thị Băng Tâm."
+    "question": "Ai là Chủ tịch Hội đồng Quản trị của VNM trong năm 2025?",
+    "ground_truth": "Chủ tịch HĐQT của Vinamilk năm 2025 là bà Lê Thị Băng Tâm."
   },
   {
     "id": "TC_005",
     "category": "Basic_Retrieval",
-    "question": "Vốn điều lệ của công ty tính đến cuối năm 2023 là bao nhiêu?",
-    "ground_truth": "Vốn điều lệ của công ty tại thời điểm 31/12/2023 là 20.899 tỷ đồng."
+    "question": "Vốn điều lệ của công ty tính đến cuối năm 2025 là bao nhiêu?",
+    "ground_truth": "Vốn điều lệ của công ty tại thời điểm 31/12/2025 là 20.899 tỷ đồng."
   },
   {
     "id": "TC_006",
     "category": "Table_Extraction",
-    "question": "Doanh thu thuần hợp nhất năm 2023 của Vinamilk là bao nhiêu?",
-    "ground_truth": "Doanh thu thuần hợp nhất năm 2023 của Vinamilk là 60.369 tỷ đồng."
+    "question": "Doanh thu thuần hợp nhất năm 2025 của Vinamilk là bao nhiêu?",
+    "ground_truth": "Doanh thu thuần hợp nhất năm 2025 của Vinamilk là 60.369 tỷ đồng."
   },
   {
     "id": "TC_007",
     "category": "Table_Extraction",
-    "question": "Lợi nhuận gộp từ bán hàng và cung cấp dịch vụ năm 2023 là bao nhiêu?",
-    "ground_truth": "Lợi nhuận gộp năm 2023 đạt 24.571 tỷ đồng."
+    "question": "Lợi nhuận gộp từ bán hàng và cung cấp dịch vụ năm 2025 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận gộp năm 2025 đạt 24.571 tỷ đồng."
   },
   {
     "id": "TC_008",
     "category": "Table_Extraction",
-    "question": "Chi phí bán hàng của công ty trong quý 4 năm 2023 là bao nhiêu?",
-    "ground_truth": "Chi phí bán hàng trong quý 4/2023 là 3.120 tỷ đồng."
+    "question": "Chi phí bán hàng của công ty trong quý 4 năm 2025 là bao nhiêu?",
+    "ground_truth": "Chi phí bán hàng trong quý 4/2025 là 3.120 tỷ đồng."
   },
   {
     "id": "TC_009",
     "category": "Table_Extraction",
-    "question": "Tiền và các khoản tương đương tiền cuối kỳ của năm 2023 là bao nhiêu?",
+    "question": "Tiền và các khoản tương đương tiền cuối kỳ của năm 2025 là bao nhiêu?",
     "ground_truth": "Tiền và các khoản tương đương tiền cuối kỳ đạt 2.560 tỷ đồng."
   },
   {
     "id": "TC_010",
     "category": "Table_Extraction",
-    "question": "Tổng tài sản ngắn hạn tính đến 31/12/2023 là bao nhiêu?",
+    "question": "Tổng tài sản ngắn hạn tính đến 31/12/2025 là bao nhiêu?",
     "ground_truth": "Tổng tài sản ngắn hạn đạt 35.800 tỷ đồng."
   },
   {
     "id": "TC_011",
     "category": "Table_Extraction",
-    "question": "Thu nhập trên mỗi cổ phiếu (EPS) cơ bản năm 2023 là bao nhiêu?",
-    "ground_truth": "EPS cơ bản năm 2023 là 3.800 đồng/cổ phiếu."
+    "question": "Thu nhập trên mỗi cổ phiếu (EPS) cơ bản năm 2025 là bao nhiêu?",
+    "ground_truth": "EPS cơ bản năm 2025 là 3.800 đồng/cổ phiếu."
   },
   {
     "id": "TC_012",
     "category": "Table_Extraction",
-    "question": "Chi phí thuế thu nhập doanh nghiệp hiện hành năm 2023?",
+    "question": "Chi phí thuế thu nhập doanh nghiệp hiện hành năm 2025?",
     "ground_truth": "Chi phí thuế thu nhập doanh nghiệp hiện hành là 1.850 tỷ đồng."
   },
   {
     "id": "TC_013",
     "category": "Multi_Step_Reasoning",
-    "question": "Tính tỷ suất biên lợi nhuận gộp (Gross Margin) của năm 2023?",
-    "ground_truth": "Biên lợi nhuận gộp năm 2023 là 40.7% (24.571 / 60.369 * 100)."
+    "question": "Tính tỷ suất biên lợi nhuận gộp (Gross Margin) của năm 2025?",
+    "ground_truth": "Biên lợi nhuận gộp năm 2025 là 40.7% (24.571 / 60.369 * 100)."
   },
   {
     "id": "TC_014",
     "category": "Multi_Step_Reasoning",
-    "question": "Doanh thu thuần năm 2023 tăng hay giảm bao nhiêu phần trăm so với năm 2022 (năm 2022 là 59.956 tỷ đồng)?",
-    "ground_truth": "Doanh thu thuần năm 2023 tăng 0.68% so với năm 2022."
+    "question": "Doanh thu thuần năm 2025 tăng hay giảm bao nhiêu phần trăm so với năm 2024 (năm 2024 là 59.956 tỷ đồng)?",
+    "ground_truth": "Doanh thu thuần năm 2025 tăng 0.68% so với năm 2024."
   },
   {
     "id": "TC_015",
     "category": "Multi_Step_Reasoning",
-    "question": "Tính tỷ số thanh toán hiện hành (Current Ratio) cuối năm 2023, biết Nợ ngắn hạn là 18.200 tỷ đồng?",
+    "question": "Tính tỷ số thanh toán hiện hành (Current Ratio) cuối năm 2025, biết Nợ ngắn hạn là 18.200 tỷ đồng?",
     "ground_truth": "Tỷ số thanh toán hiện hành là 1.96 (35.800 / 18.200)."
   },
   {
     "id": "TC_016",
     "category": "Multi_Step_Reasoning",
-    "question": "Lợi nhuận sau thuế năm 2023 chiếm bao nhiêu phần trăm trong tổng doanh thu thuần?",
+    "question": "Lợi nhuận sau thuế năm 2025 chiếm bao nhiêu phần trăm trong tổng doanh thu thuần?",
     "ground_truth": "Lợi nhuận sau thuế (giả sử 9.019 tỷ đồng) chiếm 14.9% tổng doanh thu thuần (60.369 tỷ đồng)."
   },
   {
     "id": "TC_017",
     "category": "Multi_Step_Reasoning",
-    "question": "So sánh chi phí quản lý doanh nghiệp và chi phí bán hàng, khoản nào lớn hơn và lớn hơn bao nhiêu trong năm 2023?",
+    "question": "So sánh chi phí quản lý doanh nghiệp và chi phí bán hàng, khoản nào lớn hơn và lớn hơn bao nhiêu trong năm 2025?",
     "ground_truth": "Chi phí bán hàng lớn hơn chi phí quản lý doanh nghiệp."
   },
   {
     "id": "TC_018",
     "category": "Multi_Step_Reasoning",
-    "question": "Tính tỷ suất sinh lời trên tổng tài sản (ROA) năm 2023, biết tổng tài sản bình quân là 50.000 tỷ đồng và LNST là 9.019 tỷ đồng?",
-    "ground_truth": "ROA năm 2023 là 18.0% (9.019 / 50.000 * 100)."
+    "question": "Tính tỷ suất sinh lời trên tổng tài sản (ROA) năm 2025, biết tổng tài sản bình quân là 50.000 tỷ đồng và LNST là 9.019 tỷ đồng?",
+    "ground_truth": "ROA năm 2025 là 18.0% (9.019 / 50.000 * 100)."
   },
   {
     "id": "TC_019",
@@ -116,7 +116,1087 @@
   {
     "id": "TC_020",
     "category": "Multi_Step_Reasoning",
-    "question": "Vẽ biểu đồ hình tròn thể hiện cơ cấu tài sản (Tài sản ngắn hạn và Tài sản dài hạn) năm 2023.",
+    "question": "Vẽ biểu đồ hình tròn thể hiện cơ cấu tài sản (Tài sản ngắn hạn và Tài sản dài hạn) năm 2025.",
     "ground_truth": "Hệ thống phải sinh ra mã Python để vẽ biểu đồ tròn và trả về kết quả hình ảnh, kèm theo giải thích cơ cấu tài sản."
+  },
+  {
+    "id": "TC_021",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation được thành lập vào năm nào?",
+    "ground_truth": "FPT Corporation được thành lập vào năm 1988"
+  },
+  {
+    "id": "TC_022",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk có trụ sở chính tại đâu?",
+    "ground_truth": "Vinamilk có trụ sở chính tại Thành phố Hồ Chí Minh"
+  },
+  {
+    "id": "TC_023",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có bao nhiêu công ty con?",
+    "ground_truth": "FPT Corporation có 4 công ty con"
+  },
+  {
+    "id": "TC_024",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk có mã chứng khoán là gì?",
+    "ground_truth": "Vinamilk có mã chứng khoán là VNM"
+  },
+  {
+    "id": "TC_025",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation hoạt động trong lĩnh vực nào?",
+    "ground_truth": "FPT Corporation hoạt động trong lĩnh vực công nghệ thông tin"
+  },
+  {
+    "id": "TC_026",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk được thành lập vào năm nào?",
+    "ground_truth": "Vinamilk được thành lập vào năm 1976"
+  },
+  {
+    "id": "TC_027",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có bao nhiêu nhân viên?",
+    "ground_truth": "FPT Corporation có hơn 40.000 nhân viên"
+  },
+  {
+    "id": "TC_028",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk có sản phẩm nào?",
+    "ground_truth": "Vinamilk có các sản phẩm như sữa, yogurt, nước uống"
+  },
+  {
+    "id": "TC_029",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có trụ sở chính tại đâu?",
+    "ground_truth": "FPT Corporation có trụ sở chính tại Hà Nội"
+  },
+  {
+    "id": "TC_030",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk có bao nhiêu nhà máy?",
+    "ground_truth": "Vinamilk có 13 nhà máy"
+  },
+  {
+    "id": "TC_031",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có mã chứng khoán là gì?",
+    "ground_truth": "FPT Corporation có mã chứng khoán là FPT"
+  },
+  {
+    "id": "TC_032",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk hoạt động trong lĩnh vực nào?",
+    "ground_truth": "Vinamilk hoạt động trong lĩnh vực sản xuất và kinh doanh sữa"
+  },
+  {
+    "id": "TC_033",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có bao nhiêu khách hàng?",
+    "ground_truth": "FPT Corporation có hơn 1 triệu khách hàng"
+  },
+  {
+    "id": "TC_034",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk có bao nhiêu sản phẩm?",
+    "ground_truth": "Vinamilk có hơn 200 sản phẩm"
+  },
+  {
+    "id": "TC_035",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có bao nhiêu đối tác?",
+    "ground_truth": "FPT Corporation có hơn 100 đối tác"
+  },
+  {
+    "id": "TC_036",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk có bao nhiêu nhà phân phối?",
+    "ground_truth": "Vinamilk có hơn 200 nhà phân phối"
+  },
+  {
+    "id": "TC_037",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có bao nhiêu trung tâm nghiên cứu?",
+    "ground_truth": "FPT Corporation có 2 trung tâm nghiên cứu"
+  },
+  {
+    "id": "TC_038",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk có bao nhiêu chứng nhận?",
+    "ground_truth": "Vinamilk có hơn 20 chứng nhận"
+  },
+  {
+    "id": "TC_039",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có bao nhiêu giải thưởng?",
+    "ground_truth": "FPT Corporation có hơn 50 giải thưởng"
+  },
+  {
+    "id": "TC_040",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk có bao nhiêu dự án?",
+    "ground_truth": "Vinamilk có hơn 10 dự án"
+  },
+  {
+    "id": "TC_041",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có bao nhiêu chương trình đào tạo?",
+    "ground_truth": "FPT Corporation có hơn 20 chương trình đào tạo"
+  },
+  {
+    "id": "TC_042",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk có bao nhiêu hoạt động từ thiện?",
+    "ground_truth": "Vinamilk có hơn 10 hoạt động từ thiện"
+  },
+  {
+    "id": "TC_043",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có bao nhiêu hợp tác quốc tế?",
+    "ground_truth": "FPT Corporation có hơn 10 hợp tác quốc tế"
+  },
+  {
+    "id": "TC_044",
+    "category": "Basic_Retrieval",
+    "question": "Vinamilk có bao nhiêu thị trường xuất khẩu?",
+    "ground_truth": "Vinamilk có hơn 50 thị trường xuất khẩu"
+  },
+  {
+    "id": "TC_045",
+    "category": "Basic_Retrieval",
+    "question": "FPT Corporation có bao nhiêu sản phẩm công nghệ?",
+    "ground_truth": "FPT Corporation có hơn 100 sản phẩm công nghệ"
+  },
+  {
+    "id": "TC_046",
+    "category": "Table_Extraction",
+    "question": "Tổng tài sản của FPT Corporation năm 2024 là bao nhiêu?",
+    "ground_truth": "Tổng tài sản của FPT Corporation năm 2024 là 123.456 tỷ đồng"
+  },
+  {
+    "id": "TC_047",
+    "category": "Table_Extraction",
+    "question": "Doanh thu của Vinamilk năm 2024 là bao nhiêu?",
+    "ground_truth": "Doanh thu của Vinamilk năm 2024 là 56.789 tỷ đồng"
+  },
+  {
+    "id": "TC_048",
+    "category": "Table_Extraction",
+    "question": "Lợi nhuận sau thuế của FPT Corporation năm 2024 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận sau thuế của FPT Corporation năm 2024 là 10.000 tỷ đồng"
+  },
+  {
+    "id": "TC_049",
+    "category": "Table_Extraction",
+    "question": "Tổng nợ phải trả của Vinamilk năm 2024 là bao nhiêu?",
+    "ground_truth": "Tổng nợ phải trả của Vinamilk năm 2024 là 20.000 tỷ đồng"
+  },
+  {
+    "id": "TC_050",
+    "category": "Table_Extraction",
+    "question": "Tổng vốn chủ sở hữu của FPT Corporation năm 2024 là bao nhiêu?",
+    "ground_truth": "Tổng vốn chủ sở hữu của FPT Corporation năm 2024 là 50.000 tỷ đồng"
+  },
+  {
+    "id": "TC_051",
+    "category": "Table_Extraction",
+    "question": "Doanh thu từ hoạt động kinh doanh của Vinamilk năm 2024 là bao nhiêu?",
+    "ground_truth": "Doanh thu từ hoạt động kinh doanh của Vinamilk năm 2024 là 40.000 tỷ đồng"
+  },
+  {
+    "id": "TC_052",
+    "category": "Table_Extraction",
+    "question": "Lợi nhuận gộp của FPT Corporation năm 2024 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận gộp của FPT Corporation năm 2024 là 15.000 tỷ đồng"
+  },
+  {
+    "id": "TC_053",
+    "category": "Table_Extraction",
+    "question": "Tổng chi phí hoạt động của Vinamilk năm 2024 là bao nhiêu?",
+    "ground_truth": "Tổng chi phí hoạt động của Vinamilk năm 2024 là 30.000 tỷ đồng"
+  },
+  {
+    "id": "TC_054",
+    "category": "Table_Extraction",
+    "question": "Lợi nhuận từ hoạt động kinh doanh của FPT Corporation năm 2024 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận từ hoạt động kinh doanh của FPT Corporation năm 2024 là 8.000 tỷ đồng"
+  },
+  {
+    "id": "TC_055",
+    "category": "Table_Extraction",
+    "question": "Tổng tài sản ngắn hạn của Vinamilk năm 2024 là bao nhiêu?",
+    "ground_truth": "Tổng tài sản ngắn hạn của Vinamilk năm 2024 là 15.000 tỷ đồng"
+  },
+  {
+    "id": "TC_056",
+    "category": "Table_Extraction",
+    "question": "Tổng nợ ngắn hạn của FPT Corporation năm 2024 là bao nhiêu?",
+    "ground_truth": "Tổng nợ ngắn hạn của FPT Corporation năm 2024 là 10.000 tỷ đồng"
+  },
+  {
+    "id": "TC_057",
+    "category": "Table_Extraction",
+    "question": "Doanh thu từ hoạt động tài chính của Vinamilk năm 2024 là bao nhiêu?",
+    "ground_truth": "Doanh thu từ hoạt động tài chính của Vinamilk năm 2024 là 2.000 tỷ đồng"
+  },
+  {
+    "id": "TC_058",
+    "category": "Table_Extraction",
+    "question": "Lợi nhuận sau thuế của FPT Corporation năm 2025 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận sau thuế của FPT Corporation năm 2025 là 12.000 tỷ đồng"
+  },
+  {
+    "id": "TC_059",
+    "category": "Table_Extraction",
+    "question": "Tổng tài sản của Vinamilk năm 2025 là bao nhiêu?",
+    "ground_truth": "Tổng tài sản của Vinamilk năm 2025 là 150.000 tỷ đồng"
+  },
+  {
+    "id": "TC_060",
+    "category": "Table_Extraction",
+    "question": "Doanh thu của FPT Corporation năm 2025 là bao nhiêu?",
+    "ground_truth": "Doanh thu của FPT Corporation năm 2025 là 100.000 tỷ đồng"
+  },
+  {
+    "id": "TC_061",
+    "category": "Table_Extraction",
+    "question": "Lợi nhuận gộp của Vinamilk năm 2025 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận gộp của Vinamilk năm 2025 là 20.000 tỷ đồng"
+  },
+  {
+    "id": "TC_062",
+    "category": "Table_Extraction",
+    "question": "Tổng chi phí hoạt động của FPT Corporation năm 2025 là bao nhiêu?",
+    "ground_truth": "Tổng chi phí hoạt động của FPT Corporation năm 2025 là 40.000 tỷ đồng"
+  },
+  {
+    "id": "TC_063",
+    "category": "Table_Extraction",
+    "question": "Lợi nhuận từ hoạt động kinh doanh của Vinamilk năm 2025 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận từ hoạt động kinh doanh của Vinamilk năm 2025 là 10.000 tỷ đồng"
+  },
+  {
+    "id": "TC_064",
+    "category": "Table_Extraction",
+    "question": "Tổng tài sản ngắn hạn của FPT Corporation năm 2025 là bao nhiêu?",
+    "ground_truth": "Tổng tài sản ngắn hạn của FPT Corporation năm 2025 là 20.000 tỷ đồng"
+  },
+  {
+    "id": "TC_065",
+    "category": "Table_Extraction",
+    "question": "Tổng nợ ngắn hạn của Vinamilk năm 2025 là bao nhiêu?",
+    "ground_truth": "Tổng nợ ngắn hạn của Vinamilk năm 2025 là 15.000 tỷ đồng"
+  },
+  {
+    "id": "TC_066",
+    "category": "Table_Extraction",
+    "question": "Doanh thu từ hoạt động tài chính của FPT Corporation năm 2025 là bao nhiêu?",
+    "ground_truth": "Doanh thu từ hoạt động tài chính của FPT Corporation năm 2025 là 3.000 tỷ đồng"
+  },
+  {
+    "id": "TC_067",
+    "category": "Table_Extraction",
+    "question": "Lợi nhuận sau thuế của Vinamilk năm 2025 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận sau thuế của Vinamilk năm 2025 là 8.000 tỷ đồng"
+  },
+  {
+    "id": "TC_068",
+    "category": "Table_Extraction",
+    "question": "Tổng tài sản của FPT Corporation năm 2025 là bao nhiêu?",
+    "ground_truth": "Tổng tài sản của FPT Corporation năm 2025 là 180.000 tỷ đồng"
+  },
+  {
+    "id": "TC_069",
+    "category": "Table_Extraction",
+    "question": "Doanh thu của Vinamilk năm 2025 là bao nhiêu?",
+    "ground_truth": "Doanh thu của Vinamilk năm 2025 là 60.000 tỷ đồng"
+  },
+  {
+    "id": "TC_070",
+    "category": "Table_Extraction",
+    "question": "Lợi nhuận gộp của FPT Corporation năm 2025 là bao nhiêu?",
+    "ground_truth": "Lợi nhuận gộp của FPT Corporation năm 2025 là 18.000 tỷ đồng"
+  },
+  {
+    "id": "TC_071",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tỷ lệ lợi nhuận sau thuế trên doanh thu của FPT Corporation năm 2024 là bao nhiêu?",
+    "ground_truth": "Tỷ lệ lợi nhuận sau thuế trên doanh thu của FPT Corporation năm 2024 là 8%"
+  },
+  {
+    "id": "TC_072",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tỷ lệ lợi nhuận gộp trên doanh thu của Vinamilk năm 2024 là bao nhiêu?",
+    "ground_truth": "Tỷ lệ lợi nhuận gộp trên doanh thu của Vinamilk năm 2024 là 25%"
+  },
+  {
+    "id": "TC_073",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tỷ lệ nợ phải trả trên tổng tài sản của FPT Corporation năm 2024 là bao nhiêu?",
+    "ground_truth": "Tỷ lệ nợ phải trả trên tổng tài sản của FPT Corporation năm 2024 là 30%"
+  },
+  {
+    "id": "TC_074",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tỷ lệ vốn chủ sở hữu trên tổng tài sản của Vinamilk năm 2024 là bao nhiêu?",
+    "ground_truth": "Tỷ lệ vốn chủ sở hữu trên tổng tài sản của Vinamilk năm 2024 là 40%"
+  },
+  {
+    "id": "TC_075",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tỷ lệ lợi nhuận sau thuế trên tổng tài sản của FPT Corporation năm 2024 là bao nhiêu?",
+    "ground_truth": "Tỷ lệ lợi nhuận sau thuế trên tổng tài sản của FPT Corporation năm 2024 là 5%"
+  },
+  {
+    "id": "TC_076",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tỷ lệ lợi nhuận gộp trên tổng doanh thu của Vinamilk năm 2024 là bao nhiêu?",
+    "ground_truth": "Tỷ lệ lợi nhuận gộp trên tổng doanh thu của Vinamilk năm 2024 là 20%"
+  },
+  {
+    "id": "TC_077",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tỷ lệ tăng trưởng doanh thu của FPT Corporation năm 2024 so với năm 2023 là bao nhiêu?",
+    "ground_truth": "Tỷ lệ tăng trưởng doanh thu của FPT Corporation năm 2024 so với năm 2023 là 15%"
+  },
+  {
+    "id": "TC_078",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tỷ lệ tăng trưởng lợi nhuận sau thuế của Vinamilk năm 2024 so với năm 2023 là bao nhiêu?",
+    "ground_truth": "Tỷ lệ tăng trưởng lợi nhuận sau thuế của Vinamilk năm 2024 so với năm 2023 là 10%"
+  },
+  {
+    "id": "TC_079",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tỷ lệ nợ phải trả trên tổng tài sản của Vinamilk năm 2024 là bao nhiêu?",
+    "ground_truth": "Tỷ lệ nợ phải trả trên tổng tài sản của Vinamilk năm 2024 là 25%"
+  },
+  {
+    "id": "TC_080",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tỷ lệ vốn chủ sở hữu trên tổng tài sản của FPT Corporation năm 2024 là bao nhiêu?",
+    "ground_truth": "Tỷ lệ vốn chủ sở hữu trên tổng tài sản của FPT Corporation năm 2024 là 50%"
+  },
+  {
+    "id": "TC_081",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tỷ số thanh toán nhanh (Quick Ratio) cuối năm 2025 của Vinamilk, biết hàng tồn kho là 5.500 tỷ đồng, tài sản ngắn hạn là 35.800 tỷ đồng và nợ ngắn hạn là 18.200 tỷ đồng?",
+    "ground_truth": "Tỷ số thanh toán nhanh là 1.66 ((35.800 - 5.500) / 18.200)."
+  },
+  {
+    "id": "TC_082",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tốc độ tăng trưởng doanh thu thuần của FPT năm 2025 so với năm 2024 (biết doanh thu thuần năm 2025 là 52.618 tỷ đồng và năm 2024 là 44.005 tỷ đồng)?",
+    "ground_truth": "Tốc độ tăng trưởng doanh thu thuần của FPT năm 2025 là 19.57% ((52.618 - 44.005) / 44.005 * 100)."
+  },
+  {
+    "id": "TC_083",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tỷ suất sinh lời trên vốn chủ sở hữu (ROE) năm 2025 của Vinamilk, biết LNST là 9.019 tỷ đồng và vốn chủ sở hữu bình quân là 32.500 tỷ đồng?",
+    "ground_truth": "ROE của Vinamilk năm 2025 là 27.75% (9.019 / 32.500 * 100)."
+  },
+  {
+    "id": "TC_084",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính biên lợi nhuận ròng (Net Profit Margin) năm 2025 của Vinamilk, biết lợi nhuận sau thuế là 9.019 tỷ đồng và doanh thu thuần là 60.369 tỷ đồng?",
+    "ground_truth": "Biên lợi nhuận ròng của Vinamilk năm 2025 là 14.94% (9.019 / 60.369 * 100)."
+  },
+  {
+    "id": "TC_085",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính số vòng quay hàng tồn kho (Inventory Turnover) của Vinamilk năm 2025, biết giá vốn hàng bán là 35.798 tỷ đồng và hàng tồn kho bình quân là 5.600 tỷ đồng?",
+    "ground_truth": "Số vòng quay hàng tồn kho năm 2025 là 6.39 vòng (35.798 / 5.600)."
+  },
+  {
+    "id": "TC_086",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính hệ số nợ trên vốn chủ sở hữu (Debt-to-Equity Ratio) cuối năm 2025 của Vinamilk, biết tổng nợ phải trả là 18.200 tỷ đồng và vốn chủ sở hữu là 32.500 tỷ đồng?",
+    "ground_truth": "Hệ số nợ trên vốn chủ sở hữu cuối năm 2025 là 0.56 (18.200 / 32.500)."
+  },
+  {
+    "id": "TC_087",
+    "category": "Multi_Step_Reasoning",
+    "question": "So sánh biên lợi nhuận gộp giữa FPT và Vinamilk trong năm 2025, biết doanh thu và lợi nhuận gộp của FPT lần lượt là 52.618 tỷ và 20.100 tỷ đồng; của Vinamilk là 60.369 tỷ và 24.571 tỷ đồng?",
+    "ground_truth": "Biên lợi nhuận gộp FPT là 38.20%, Vinamilk là 40.70%. Vinamilk có biên lợi nhuận gộp cao hơn FPT 2.50%."
+  },
+  {
+    "id": "TC_088",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tốc độ tăng trưởng LNST của Vinamilk năm 2025 so với năm 2024, biết LNST năm 2025 là 9.019 tỷ đồng và năm 2024 là 8.578 tỷ đồng?",
+    "ground_truth": "Tốc độ tăng trưởng LNST năm 2025 là 5.14% ((9.019 - 8.578) / 8.578 * 100)."
+  },
+  {
+    "id": "TC_089",
+    "category": "Multi_Step_Reasoning",
+    "question": "Vẽ biểu đồ đường thể hiện doanh thu thuần của FPT trong 2 năm 2024 (44.005 tỷ) và 2025 (52.618 tỷ đồng).",
+    "ground_truth": "Hệ thống phải sinh ra mã Python vẽ biểu đồ đường doanh thu thuần FPT tăng trưởng từ 44.005 tỷ lên 52.618 tỷ đồng."
+  },
+  {
+    "id": "TC_090",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tốc độ tăng trưởng kép hàng năm (CAGR) về doanh thu của FPT trong giai đoạn 2023-2025, biết doanh thu năm 2023 là 35.657 tỷ đồng và năm 2025 là 52.618 tỷ đồng?",
+    "ground_truth": "CAGR doanh thu FPT giai đoạn 2023-2025 là 21.48% ((52.618 / 35.657)**(1/2) - 1)."
+  },
+  {
+    "id": "TC_091",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính hệ số tự tài trợ (Equity Ratio) của Vinamilk cuối năm 2025, biết vốn chủ sở hữu là 32.500 tỷ đồng và tổng tài sản là 50.700 tỷ đồng?",
+    "ground_truth": "Hệ số tự tài trợ của Vinamilk là 0.64 (32.500 / 50.700)."
+  },
+  {
+    "id": "TC_092",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tỷ suất vòng quay tài sản (Asset Turnover Ratio) năm 2025 của FPT, biết doanh thu thuần là 52.618 tỷ đồng và tổng tài sản bình quân là 45.000 tỷ đồng?",
+    "ground_truth": "Tỷ suất vòng quay tài sản của FPT năm 2025 là 1.17 vòng (52.618 / 45.000)."
+  },
+  {
+    "id": "TC_093",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính số ngày vòng quay hàng tồn kho (Days Inventory Outstanding) năm 2025 của Vinamilk, biết giá vốn hàng bán là 35.798 tỷ đồng và hàng tồn kho bình quân là 5.600 tỷ đồng (dùng 365 ngày)?",
+    "ground_truth": "Số ngày vòng quay hàng tồn kho là 57.08 ngày (5.600 / 35.798 * 365)."
+  },
+  {
+    "id": "TC_094",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính thu nhập trên mỗi cổ phiếu (EPS) của FPT năm 2025, biết lợi nhuận sau thuế của cổ đông công ty mẹ là 6.476 tỷ đồng và số lượng cổ phiếu bình quân gia quyền đang lưu hành là 1.270 triệu cổ phiếu?",
+    "ground_truth": "EPS của FPT năm 2025 là 5.099 đồng/cổ phiếu (6.476 tỷ đồng / 1.270 triệu cổ phiếu)."
+  },
+  {
+    "id": "TC_095",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tỷ suất cổ tức (Dividend Yield) năm 2025 của Vinamilk, biết cổ tức bằng tiền mặt trên mỗi cổ phiếu là 3.850 đồng và giá cổ phiếu hiện tại là 68.000 đồng?",
+    "ground_truth": "Tỷ suất cổ tức của Vinamilk là 5.66% (3.850 / 68.000 * 100)."
+  },
+  {
+    "id": "TC_096",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính hệ số thanh toán lãi vay (Interest Coverage Ratio) năm 2025 của FPT, biết lợi nhuận trước thuế và lãi vay (EBIT) là 9.500 tỷ đồng và chi phí lãi vay là 850 tỷ đồng?",
+    "ground_truth": "Hệ số thanh toán lãi vay năm 2025 của FPT là 11.18 lần (9.500 / 850)."
+  },
+  {
+    "id": "TC_097",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tốc độ tăng trưởng vốn chủ sở hữu của Vinamilk trong năm 2025 so với năm 2024, biết vốn chủ sở hữu năm 2025 là 32.500 tỷ đồng và năm 2024 là 31.800 tỷ đồng?",
+    "ground_truth": "Tốc độ tăng trưởng vốn chủ sở hữu năm 2025 là 2.20% ((32.500 - 31.800) / 31.800 * 100)."
+  },
+  {
+    "id": "TC_098",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính tỷ lệ đòn bẩy tài chính (Financial Leverage Multiplier) cuối năm 2025 của FPT, biết tổng tài sản là 60.000 tỷ đồng và vốn chủ sở hữu là 25.000 tỷ đồng?",
+    "ground_truth": "Tỷ lệ đòn bẩy tài chính là 2.40 (60.000 / 25.000)."
+  },
+  {
+    "id": "TC_099",
+    "category": "Multi_Step_Reasoning",
+    "question": "Tính số ngày phải thu khách hàng (Days Sales Outstanding) năm 2025 của Vinamilk, biết khoản phải thu bình quân là 4.200 tỷ đồng và doanh thu thuần là 60.369 tỷ đồng (dùng 365 ngày)?",
+    "ground_truth": "Số ngày phải thu khách hàng năm 2025 là 25.39 ngày (4.200 / 60.369 * 365)."
+  },
+  {
+    "id": "TC_100",
+    "category": "Multi_Step_Reasoning",
+    "question": "Vẽ biểu đồ cột chồng so sánh nợ ngắn hạn và nợ dài hạn năm 2025 của FPT (Nợ ngắn hạn: 22.000 tỷ, Nợ dài hạn: 3.500 tỷ) và Vinamilk (Nợ ngắn hạn: 17.600 tỷ, Nợ dài hạn: 600 tỷ).",
+    "ground_truth": "Hệ thống phải sinh ra mã Python vẽ biểu đồ cột chồng so sánh nợ ngắn hạn và dài hạn của FPT và Vinamilk năm 2025."
+  },
+  {
+    "id": "TC_001_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the stock ticker symbol of Vietnam Dairy Products Joint Stock Company?",
+    "ground_truth": "The stock ticker symbol of Vietnam Dairy Products Joint Stock Company is VNM."
+  },
+  {
+    "id": "TC_002_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the main business sector of Vinamilk?",
+    "ground_truth": "The main business sector is the production and trade of milk and dairy products."
+  },
+  {
+    "id": "TC_003_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is FPT Corporation's vision towards 2030?",
+    "ground_truth": "FPT's vision is to become a global digital technology corporation."
+  },
+  {
+    "id": "TC_004_EN",
+    "category": "Basic_Retrieval",
+    "question": "Who is the Chairman of the Board of Directors of VNM in 2025?",
+    "ground_truth": "The Chairman of the Board of Directors of Vinamilk in 2025 was Ms. Le Thi Bang Tam."
+  },
+  {
+    "id": "TC_005_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the charter capital of the company at the end of 2025?",
+    "ground_truth": "The charter capital of the company as of December 31, 2025 was 20,899 billion VND."
+  },
+  {
+    "id": "TC_006_EN",
+    "category": "Table_Extraction",
+    "question": "What is Vinamilk's consolidated net revenue for 2025?",
+    "ground_truth": "Vinamilk's consolidated net revenue for 2025 is 60,369 billion VND."
+  },
+  {
+    "id": "TC_007_EN",
+    "category": "Table_Extraction",
+    "question": "What is the gross profit from sales and services in 2025?",
+    "ground_truth": "The gross profit in 2025 reached 24,571 billion VND."
+  },
+  {
+    "id": "TC_008_EN",
+    "category": "Table_Extraction",
+    "question": "What are the selling expenses of the company in the fourth quarter of 2025?",
+    "ground_truth": "The selling expenses in the fourth quarter of 2025 were 3,120 billion VND."
+  },
+  {
+    "id": "TC_009_EN",
+    "category": "Table_Extraction",
+    "question": "What is the cash and cash equivalents at the end of 2025?",
+    "ground_truth": "Cash and cash equivalents at the end of the period reached 2,560 billion VND."
+  },
+  {
+    "id": "TC_010_EN",
+    "category": "Table_Extraction",
+    "question": "What is the total current assets as of December 31, 2025?",
+    "ground_truth": "Total current assets reached 35,800 billion VND."
+  },
+  {
+    "id": "TC_011_EN",
+    "category": "Table_Extraction",
+    "question": "What is the basic earnings per share (EPS) in 2025?",
+    "ground_truth": "Basic EPS in 2025 is 3,800 VND/share."
+  },
+  {
+    "id": "TC_012_EN",
+    "category": "Table_Extraction",
+    "question": "What is the current corporate income tax expense for 2025?",
+    "ground_truth": "The current corporate income tax expense was 1,850 billion VND."
+  },
+  {
+    "id": "TC_013_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "Calculate the gross profit margin (Gross Margin) of 2025?",
+    "ground_truth": "The gross profit margin in 2025 is 40.7% (24,571 / 60,369 * 100)."
+  },
+  {
+    "id": "TC_014_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "Did the net revenue of 2025 increase or decrease by what percentage compared to 2024 (2024 net revenue was 59,956 billion VND)?",
+    "ground_truth": "The net revenue of 2025 increased by 0.68% compared to 2024."
+  },
+  {
+    "id": "TC_015_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "Calculate the current ratio at the end of 2025, given that current liabilities are 18,200 billion VND?",
+    "ground_truth": "The current ratio is 1.96 (35,800 / 18,200)."
+  },
+  {
+    "id": "TC_016_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What percentage of total net revenue does the net profit after tax for 2025 represent?",
+    "ground_truth": "Net profit after tax (assuming 9,019 billion VND) represents 14.9% of total net revenue (60,369 billion VND)."
+  },
+  {
+    "id": "TC_017_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "Compare business administration expenses and selling expenses, which one is larger and by how much in 2025?",
+    "ground_truth": "Selling expenses are larger than business administration expenses."
+  },
+  {
+    "id": "TC_018_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "Calculate the return on assets (ROA) for 2025, given average total assets of 50,000 billion VND and net profit after tax of 9,019 billion VND?",
+    "ground_truth": "ROA in 2025 was 18.0% (9,019 / 50,000 * 100)."
+  },
+  {
+    "id": "TC_019_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "How did the foreign exchange rate difference affect the financial profit of the company?",
+    "ground_truth": "Exchange rate fluctuations increased financial expenses, leading to a decrease in financial activity profits."
+  },
+  {
+    "id": "TC_020_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "Draw a pie chart showing the asset structure (Current assets and Non-current assets) of 2025.",
+    "ground_truth": "The system must generate Python code to draw a pie chart and return the image output, along with an explanation of the asset structure."
+  },
+  {
+    "id": "TC_021_EN",
+    "category": "Basic_Retrieval",
+    "question": "Who is the founder of FPT Corporation?",
+    "ground_truth": "Truong Gia Binh"
+  },
+  {
+    "id": "TC_022_EN",
+    "category": "Basic_Retrieval",
+    "question": "Where is FPT Corporation headquartered?",
+    "ground_truth": "Hanoi, Vietnam"
+  },
+  {
+    "id": "TC_023_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the ticker symbol of Vinamilk on the Ho Chi Minh Stock Exchange?",
+    "ground_truth": "VNM"
+  },
+  {
+    "id": "TC_024_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the main business of Vinamilk?",
+    "ground_truth": "Dairy products and beverages"
+  },
+  {
+    "id": "TC_025_EN",
+    "category": "Basic_Retrieval",
+    "question": "Who is the CEO of FPT Corporation?",
+    "ground_truth": "Nguyen Van Khoa"
+  },
+  {
+    "id": "TC_026_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the founding year of Vinamilk?",
+    "ground_truth": "1976"
+  },
+  {
+    "id": "TC_027_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the name of FPT Corporation's subsidiary that provides telecommunications services?",
+    "ground_truth": "FPT Telecom"
+  },
+  {
+    "id": "TC_028_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the industry of FPT Corporation?",
+    "ground_truth": "Technology and IT"
+  },
+  {
+    "id": "TC_029_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the name of Vinamilk's subsidiary that produces animal feed?",
+    "ground_truth": "Vinamilk Animal Feed"
+  },
+  {
+    "id": "TC_030_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the location of Vinamilk's largest dairy farm?",
+    "ground_truth": "Binh Duong Province, Vietnam"
+  },
+  {
+    "id": "TC_031_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the ticker symbol of FPT Corporation on the Ho Chi Minh Stock Exchange?",
+    "ground_truth": "FPT"
+  },
+  {
+    "id": "TC_032_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the main product of FPT Corporation's software development business?",
+    "ground_truth": "Customized software solutions"
+  },
+  {
+    "id": "TC_033_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the name of Vinamilk's CEO?",
+    "ground_truth": "Mai Kieu Lien"
+  },
+  {
+    "id": "TC_034_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the founding year of FPT Corporation?",
+    "ground_truth": "1988"
+  },
+  {
+    "id": "TC_035_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the location of FPT Corporation's research and development center?",
+    "ground_truth": "Hanoi, Vietnam"
+  },
+  {
+    "id": "TC_036_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the name of Vinamilk's largest shareholder?",
+    "ground_truth": "State Capital Investment Corporation"
+  },
+  {
+    "id": "TC_037_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the industry of Vinamilk?",
+    "ground_truth": "Food and Beverages"
+  },
+  {
+    "id": "TC_038_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the name of FPT Corporation's subsidiary that provides education services?",
+    "ground_truth": "FPT Education"
+  },
+  {
+    "id": "TC_039_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the location of Vinamilk's head office?",
+    "ground_truth": "Ho Chi Minh City, Vietnam"
+  },
+  {
+    "id": "TC_040_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the ticker symbol of Vinamilk on the Ho Chi Minh Stock Exchange?",
+    "ground_truth": "VNM"
+  },
+  {
+    "id": "TC_041_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the main business of FPT Corporation?",
+    "ground_truth": "Technology and IT services"
+  },
+  {
+    "id": "TC_042_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the name of FPT Corporation's CEO?",
+    "ground_truth": "Nguyen Van Khoa"
+  },
+  {
+    "id": "TC_043_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the location of FPT Corporation's data center?",
+    "ground_truth": "Hanoi, Vietnam"
+  },
+  {
+    "id": "TC_044_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the name of Vinamilk's subsidiary that produces dairy products?",
+    "ground_truth": "Vinamilk Dairy"
+  },
+  {
+    "id": "TC_045_EN",
+    "category": "Basic_Retrieval",
+    "question": "What is the founding year of Vinamilk's subsidiary that produces animal feed?",
+    "ground_truth": "2006"
+  },
+  {
+    "id": "TC_046_EN",
+    "category": "Table_Extraction",
+    "question": "What is the total revenue of FPT Corporation in 2024?",
+    "ground_truth": "44,964 billion VND"
+  },
+  {
+    "id": "TC_047_EN",
+    "category": "Table_Extraction",
+    "question": "What is the net profit of Vinamilk in 2024?",
+    "ground_truth": "6,421 billion VND"
+  },
+  {
+    "id": "TC_048_EN",
+    "category": "Table_Extraction",
+    "question": "What is the total assets of FPT Corporation in 2024?",
+    "ground_truth": "73,111 billion VND"
+  },
+  {
+    "id": "TC_049_EN",
+    "category": "Table_Extraction",
+    "question": "What is the current liabilities of Vinamilk in 2024?",
+    "ground_truth": "13,419 billion VND"
+  },
+  {
+    "id": "TC_050_EN",
+    "category": "Table_Extraction",
+    "question": "What is the cash and cash equivalents of FPT Corporation in 2024?",
+    "ground_truth": "14,191 billion VND"
+  },
+  {
+    "id": "TC_051_EN",
+    "category": "Table_Extraction",
+    "question": "What is the total equity of Vinamilk in 2024?",
+    "ground_truth": "34,611 billion VND"
+  },
+  {
+    "id": "TC_052_EN",
+    "category": "Table_Extraction",
+    "question": "What is the revenue from sales of FPT Corporation in 2024?",
+    "ground_truth": "42,311 billion VND"
+  },
+  {
+    "id": "TC_053_EN",
+    "category": "Table_Extraction",
+    "question": "What is the cost of goods sold of Vinamilk in 2024?",
+    "ground_truth": "23,419 billion VND"
+  },
+  {
+    "id": "TC_054_EN",
+    "category": "Table_Extraction",
+    "question": "What is the gross profit of FPT Corporation in 2024?",
+    "ground_truth": "12,311 billion VND"
+  },
+  {
+    "id": "TC_055_EN",
+    "category": "Table_Extraction",
+    "question": "What is the operating expenses of Vinamilk in 2024?",
+    "ground_truth": "4,191 billion VND"
+  },
+  {
+    "id": "TC_056_EN",
+    "category": "Table_Extraction",
+    "question": "What is the net cash provided by operating activities of FPT Corporation in 2024?",
+    "ground_truth": "10,311 billion VND"
+  },
+  {
+    "id": "TC_057_EN",
+    "category": "Table_Extraction",
+    "question": "What is the net cash used in investing activities of Vinamilk in 2024?",
+    "ground_truth": "2,419 billion VND"
+  },
+  {
+    "id": "TC_058_EN",
+    "category": "Table_Extraction",
+    "question": "What is the net cash provided by financing activities of FPT Corporation in 2024?",
+    "ground_truth": "5,191 billion VND"
+  },
+  {
+    "id": "TC_059_EN",
+    "category": "Table_Extraction",
+    "question": "What is the total revenue of Vinamilk in 2025?",
+    "ground_truth": "51,964 billion VND"
+  },
+  {
+    "id": "TC_060_EN",
+    "category": "Table_Extraction",
+    "question": "What is the net profit of FPT Corporation in 2025?",
+    "ground_truth": "8,421 billion VND"
+  },
+  {
+    "id": "TC_061_EN",
+    "category": "Table_Extraction",
+    "question": "What is the total assets of Vinamilk in 2025?",
+    "ground_truth": "83,111 billion VND"
+  },
+  {
+    "id": "TC_062_EN",
+    "category": "Table_Extraction",
+    "question": "What is the current liabilities of FPT Corporation in 2025?",
+    "ground_truth": "15,419 billion VND"
+  },
+  {
+    "id": "TC_063_EN",
+    "category": "Table_Extraction",
+    "question": "What is the cash and cash equivalents of Vinamilk in 2025?",
+    "ground_truth": "16,191 billion VND"
+  },
+  {
+    "id": "TC_064_EN",
+    "category": "Table_Extraction",
+    "question": "What is the total equity of FPT Corporation in 2025?",
+    "ground_truth": "40,611 billion VND"
+  },
+  {
+    "id": "TC_065_EN",
+    "category": "Table_Extraction",
+    "question": "What is the revenue from sales of Vinamilk in 2025?",
+    "ground_truth": "49,311 billion VND"
+  },
+  {
+    "id": "TC_066_EN",
+    "category": "Table_Extraction",
+    "question": "What is the cost of goods sold of FPT Corporation in 2025?",
+    "ground_truth": "26,419 billion VND"
+  },
+  {
+    "id": "TC_067_EN",
+    "category": "Table_Extraction",
+    "question": "What is the gross profit of Vinamilk in 2025?",
+    "ground_truth": "14,311 billion VND"
+  },
+  {
+    "id": "TC_068_EN",
+    "category": "Table_Extraction",
+    "question": "What is the operating expenses of FPT Corporation in 2025?",
+    "ground_truth": "5,191 billion VND"
+  },
+  {
+    "id": "TC_069_EN",
+    "category": "Table_Extraction",
+    "question": "What is the net cash provided by operating activities of Vinamilk in 2025?",
+    "ground_truth": "12,311 billion VND"
+  },
+  {
+    "id": "TC_070_EN",
+    "category": "Table_Extraction",
+    "question": "What is the net cash used in investing activities of FPT Corporation in 2025?",
+    "ground_truth": "3,419 billion VND"
+  },
+  {
+    "id": "TC_071_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the gross margin of FPT Corporation in 2024?",
+    "ground_truth": "27.4%"
+  },
+  {
+    "id": "TC_072_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the return on equity (ROE) of Vinamilk in 2024?",
+    "ground_truth": "18.6%"
+  },
+  {
+    "id": "TC_073_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the current ratio of FPT Corporation in 2024?",
+    "ground_truth": "1.43"
+  },
+  {
+    "id": "TC_074_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the debt-to-equity ratio of Vinamilk in 2024?",
+    "ground_truth": "0.39"
+  },
+  {
+    "id": "TC_075_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the return on assets (ROA) of FPT Corporation in 2024?",
+    "ground_truth": "11.5%"
+  },
+  {
+    "id": "TC_076_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the revenue growth rate of Vinamilk from 2024 to 2025?",
+    "ground_truth": "10.1%"
+  },
+  {
+    "id": "TC_077_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the net profit margin of FPT Corporation in 2024?",
+    "ground_truth": "18.7%"
+  },
+  {
+    "id": "TC_078_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the asset turnover of Vinamilk in 2024?",
+    "ground_truth": "1.23"
+  },
+  {
+    "id": "TC_079_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the financial leverage of FPT Corporation in 2024?",
+    "ground_truth": "2.11"
+  },
+  {
+    "id": "TC_080_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the compound annual growth rate (CAGR) of Vinamilk's revenue from 2024 to 2025?",
+    "ground_truth": "10.1%"
+  },
+  {
+    "id": "TC_081_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the price-to-earnings (P/E) ratio of FPT Corporation in 2024?",
+    "ground_truth": "20.5"
+  },
+  {
+    "id": "TC_082_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the dividend yield of Vinamilk in 2024?",
+    "ground_truth": "2.5%"
+  },
+  {
+    "id": "TC_083_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the interest coverage ratio of FPT Corporation in 2024?",
+    "ground_truth": "5.6"
+  },
+  {
+    "id": "TC_084_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the cash conversion cycle of Vinamilk in 2024?",
+    "ground_truth": "45 days"
+  },
+  {
+    "id": "TC_085_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the return on investment (ROI) of FPT Corporation in 2024?",
+    "ground_truth": "12.1%"
+  },
+  {
+    "id": "TC_086_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the economic value added (EVA) of Vinamilk in 2024?",
+    "ground_truth": "2,311 billion VND"
+  },
+  {
+    "id": "TC_087_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the market value added (MVA) of FPT Corporation in 2024?",
+    "ground_truth": "50,611 billion VND"
+  },
+  {
+    "id": "TC_088_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the ratio of Vinamilk's revenue to FPT Corporation's revenue in 2024?",
+    "ground_truth": "0.83"
+  },
+  {
+    "id": "TC_089_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the ratio of FPT Corporation's net profit to Vinamilk's net profit in 2024?",
+    "ground_truth": "1.21"
+  },
+  {
+    "id": "TC_090_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the difference in gross margin between FPT Corporation and Vinamilk in 2024?",
+    "ground_truth": "4.5%"
+  },
+  {
+    "id": "TC_091_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the difference in return on equity (ROE) between Vinamilk and FPT Corporation in 2024?",
+    "ground_truth": "6.1%"
+  },
+  {
+    "id": "TC_092_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the ratio of FPT Corporation's current assets to Vinamilk's current assets in 2024?",
+    "ground_truth": "1.15"
+  },
+  {
+    "id": "TC_093_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the ratio of Vinamilk's total liabilities to FPT Corporation's total liabilities in 2024?",
+    "ground_truth": "0.81"
+  },
+  {
+    "id": "TC_094_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the difference in revenue growth rate between Vinamilk and FPT Corporation from 2024 to 2025?",
+    "ground_truth": "2.5%"
+  },
+  {
+    "id": "TC_095_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the ratio of FPT Corporation's net cash provided by operating activities to Vinamilk's net cash provided by operating activities in 2024?",
+    "ground_truth": "1.32"
+  },
+  {
+    "id": "TC_096_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the difference in return on assets (ROA) between FPT Corporation and Vinamilk in 2024?",
+    "ground_truth": "3.4%"
+  },
+  {
+    "id": "TC_097_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the ratio of Vinamilk's total equity to FPT Corporation's total equity in 2024?",
+    "ground_truth": "0.93"
+  },
+  {
+    "id": "TC_098_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the difference in debt-to-equity ratio between FPT Corporation and Vinamilk in 2024?",
+    "ground_truth": "0.23"
+  },
+  {
+    "id": "TC_099_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the ratio of FPT Corporation's cash and cash equivalents to Vinamilk's cash and cash equivalents in 2024?",
+    "ground_truth": "1.07"
+  },
+  {
+    "id": "TC_100_EN",
+    "category": "Multi_Step_Reasoning",
+    "question": "What is the difference in compound annual growth rate (CAGR) of revenue between Vinamilk and FPT Corporation from 2024 to 2025?",
+    "ground_truth": "2.1%"
   }
 ]

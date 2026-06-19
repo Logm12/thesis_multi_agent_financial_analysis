@@ -38,5 +38,24 @@ class RedisCache:
         except Exception as e:
             print(f"[Cache] Failed to set cache: {e}")
 
+    def get_ingest_cache(self, sha256: str) -> str | None:
+        if not self.client:
+            return None
+        try:
+            return self.client.get(f"ingest_cache:{sha256}")
+        except Exception as e:
+            print(f"[Cache] Failed to get ingest cache: {e}")
+            return None
+
+    def set_ingest_cache(self, sha256: str, task_id: str, expire: int = 86400):
+        if not self.client:
+            return
+        try:
+            self.client.set(f"ingest_cache:{sha256}", task_id, ex=expire)
+            print(f"[Cache] Cached ingest mapping: {sha256} -> {task_id}")
+        except Exception as e:
+            print(f"[Cache] Failed to set ingest cache: {e}")
+
 # Singleton instance
 pdf_cache = RedisCache()
+

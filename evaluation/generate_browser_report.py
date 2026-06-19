@@ -55,7 +55,7 @@ def generate_report():
 
     # 3. Create Markdown Report
     md_content = []
-    md_content.append("# 📊 Báo Cáo Đánh Giá Hệ Thống Multi-Agent Financial Analysis (E2E Browser Benchmark)")
+    md_content.append("# Báo Cáo Đánh Giá Hệ Thống Multi-Agent Financial Analysis (E2E Browser Benchmark)")
     md_content.append("\n## 1. Tóm Tắt Hiệu Năng Hệ Thống (Overall Performance Summary)")
     
     md_content.append("| Chỉ Số (Metric) | Kết Quả (Value) | Mô Tả (Description) |")
@@ -78,7 +78,7 @@ def generate_report():
     md_content.append("| ID | Nhóm | Câu Hỏi (Question) | Trích Dẫn & Phản Hồi (Answer) | Độ Trễ (s) | Biểu Đồ (Chart) | Trực Quan Hóa (Steps) |")
     md_content.append("| :--- | :--- | :--- | :--- | :---: | :---: | :--- |")
     for _, row in df.iterrows():
-        chart_icon = "🟢 Có" if row["HasChart"] else "❌ Không"
+        chart_icon = "Có" if row["HasChart"] else "Không"
         # truncate answer
         ans_trunc = row["AnswerExcerpt"]
         md_content.append(f"| {row['ID']} | {row['Category']} | {row['Question']} | {ans_trunc} | {row['Latency(s)']:.2f} | {chart_icon} | `{row['Steps']}` |")

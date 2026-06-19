@@ -1,47 +1,48 @@
 /* 
-  VoltAgent Design System Implementation for Chainlit
-  Inspired by DESIGN.md
+  Pristine Light Theme Override for Chainlit
+  Tailored for institutional-grade financial analysis corporate presentations and academic defense.
 */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --abyss-black: #050507;
-  --carbon-surface: #101010;
-  --emerald-green: #00d992;
-  --volt-mint: #2fd6a1;
-  --warm-charcoal: #3d3a39;
-  --snow-white: #f2f2f2;
-  --warm-parchment: #b8b3b0;
-  --steel-slate: #8b949e;
+  --background-light: #ffffff;
+  --surface-light: #f8fafc;
+  --border-light: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --accent-color: #4f46e5;
+  --success-color: #10b981;
+  --error-color: #f43f5e;
 }
 
 /* Global Styles */
 body, #root {
-  background-color: var(--abyss-black) !important;
-  color: var(--snow-white) !important;
+  background-color: var(--background-light) !important;
+  color: var(--text-primary) !important;
   font-family: 'Inter', system-ui, sans-serif !important;
 }
 
 /* Sidebar & Header */
 .MuiDrawer-paper, header {
-  background-color: var(--abyss-black) !important;
-  border-right: 1px solid var(--warm-charcoal) !important;
-  border-bottom: 1px solid var(--warm-charcoal) !important;
+  background-color: var(--surface-light) !important;
+  border-right: 1px solid var(--border-light) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
 }
 
 /* Chat Input Container */
 .MuiInputBase-root {
-  background-color: var(--carbon-surface) !important;
-  border: 1px solid var(--warm-charcoal) !important;
+  background-color: var(--background-light) !important;
+  border: 1px solid var(--border-light) !important;
   border-radius: 8px !important;
-  color: var(--snow-white) !important;
+  color: var(--text-primary) !important;
   transition: border-color 0.2s ease-in-out;
 }
 
 .MuiInputBase-root.Mui-focused {
-  border-color: var(--emerald-green) !important;
-  box-shadow: 0 0 8px rgba(0, 217, 146, 0.2) !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 8px rgba(79, 70, 229, 0.15) !important;
 }
 
 /* Buttons */
@@ -52,14 +53,12 @@ body, #root {
 }
 
 .MuiButton-containedPrimary {
-  background-color: var(--carbon-surface) !important;
-  color: var(--volt-mint) !important;
-  border: 1px solid var(--warm-charcoal) !important;
+  background-color: var(--accent-color) !important;
+  color: #ffffff !important;
 }
 
 .MuiButton-containedPrimary:hover {
-  background-color: rgba(16, 16, 16, 0.8) !important;
-  border-color: var(--emerald-green) !important;
+  background-color: #4338ca !important;
 }
 
 /* Message Styling */
@@ -69,19 +68,23 @@ body, #root {
 
 .message {
   border-radius: 8px !important;
+  background-color: var(--surface-light) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
 }
 
 /* Code Blocks */
 pre, code {
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;
-  background-color: var(--carbon-surface) !important;
-  border: 1px solid var(--warm-charcoal) !important;
+  background-color: var(--surface-light) !important;
+  border: 1px solid var(--border-light) !important;
   border-radius: 6px !important;
+  color: var(--text-primary) !important;
 }
 
 /* Typography Overrides */
 h1, h2, h3 {
-  color: var(--emerald-green) !important;
+  color: var(--text-primary) !important;
   font-weight: 700 !important;
   letter-spacing: -0.5px !important;
 }
@@ -92,26 +95,19 @@ h1, h2, h3 {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--abyss-black);
+  background: var(--background-light);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--warm-charcoal);
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--steel-slate);
+  background: #94a3b8;
 }
 
-/* Logo Pulse Effect */
+/* Logo pulse */
 .logo-container img {
-  filter: drop-shadow(0 0 2px var(--emerald-green));
-  animation: pulse-green 3s infinite ease-in-out;
-}
-
-@keyframes pulse-green {
-  0% { filter: drop-shadow(0 0 2px var(--emerald-green)); }
-  50% { filter: drop-shadow(0 0 8px var(--emerald-green)); }
-  100% { filter: drop-shadow(0 0 2px var(--emerald-green)); }
+  filter: drop-shadow(0 0 2px var(--accent-color));
 }

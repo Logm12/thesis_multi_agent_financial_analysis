@@ -4,6 +4,19 @@ from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
 
 
+def append_messages(old: list, new: list) -> list:
+    """
+    Sliding Window Memory Reducer.
+    Appends new traceback messages but keeps at most the last 3 traceback records.
+    """
+    combined = list(old) if old else []
+    new_items = new if isinstance(new, list) else [new]
+    combined.extend(new_items)
+    if len(combined) > 3:
+        combined = combined[-3:]
+    return combined
+
+
 class AgentState(TypedDict):
     """Trạng thái (State) chung cho LangGraph workflow.
 
@@ -28,3 +41,7 @@ class AgentState(TypedDict):
     final_answer: Optional[str]
     chart_path: Optional[str]
     source_filter: Optional[str]
+    ground_truth: Optional[str]
+    tracebacks: Annotated[list[str], append_messages]
+    warnings: Optional[List[dict]]
+

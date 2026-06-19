@@ -14,9 +14,11 @@ interface ChatState {
   activePdfId: string | null;
   activePage: number;
   highlightedBbox: string | null; // e.g. "[x0, y0, x1, y1]"
+  activeSteps: string[]; // Active streaming thought steps
   setActivePdf: (id: string | null) => void;
   setActivePage: (page: number) => void;
   setHighlightedBbox: (bbox: string | null) => void;
+  setActiveSteps: (steps: string[]) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -28,6 +30,7 @@ export const useChatStore = create<ChatState>((set) => ({
   activePdfId: null,
   activePage: 1,
   highlightedBbox: null,
+  activeSteps: [],
   
   addMessage: (msg) => {
     const id = Math.random().toString(36).substring(7);
@@ -49,5 +52,6 @@ export const useChatStore = create<ChatState>((set) => ({
   // PDF setters
   setActivePdf: (activePdfId) => set({ activePdfId, activePage: 1, highlightedBbox: null }),
   setActivePage: (activePage) => set({ activePage }),
-  setHighlightedBbox: (highlightedBbox) => set({ highlightedBbox })
+  setHighlightedBbox: (highlightedBbox) => set({ highlightedBbox }),
+  setActiveSteps: (activeSteps) => set({ activeSteps })
 }));

@@ -35,3 +35,26 @@ def init_db():
     except Exception as e:
         print(f"[Database] Error initializing schema: {str(e)}")
         raise e
+
+def log_session_audit(session_id: str, question: str, answer: str, steps: list, chart_b64: str = None, warnings: list = None):
+    """Writes session audit details to PostgreSQL database."""
+    import json
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO session_audit (session_id, question, answer, steps, chart_b64, warnings) VALUES (%s, %s, %s, %s, %s, %s)",
+                    (session_id, question, answer, json.dumps(steps), chart_b64, json.dumps(warnings or []))
+                )
+    except Exception as e:
+        print(f"[Database Error] log_session_audit failed: {str(e)}")
+
+def cleanup_session(session_id: str, temp_dir_path: str):
+    """Deletes the temporary directory of a session using shutil.rmtree."""
+    import shutil
+    if temp_dir_path and os.path.exists(temp_dir_path):
+        try:
+            shutil.rmtree(temp_dir_path, ignore_errors=True)
+            print(f"[Cleanup] Cleaned up temporary directory: {temp_dir_path}")
+        except Exception as e:
+            print(f"[Cleanup Warning] Failed to delete temp directory {temp_dir_path}: {str(e)}")

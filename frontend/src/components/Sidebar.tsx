@@ -98,7 +98,7 @@ const Sidebar = () => {
             </p>
           </div>
           <button 
-            onClick={() => logout()}
+            onClick={async () => { await logout(); window.location.hash = '/login'; }}
             title="Log Out"
             className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
           >

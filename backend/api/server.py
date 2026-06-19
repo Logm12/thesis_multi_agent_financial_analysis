@@ -20,6 +20,28 @@ from fastapi.responses import HTMLResponse, FileResponse
 
 from api.routes import router as routes_router
 from api.document import router as document_router
+import re
+
+def extract_chart_data(execution_result: str) -> Optional[list]:
+    """DataFrame-to-JSON parser: extracts a JSON list from execution stdout."""
+    if not execution_result:
+        return None
+    # 1. Search for data wrapped inside <json_data>...</json_data>
+    match = re.search(r"<json_data>(.*?)</json_data>", execution_result, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(1).strip())
+        except Exception:
+            pass
+    # 2. Fallback: Search for a raw JSON array structure
+    match_fallback = re.search(r"\[\s*\{.*\}\s*\]", execution_result, re.DOTALL)
+    if match_fallback:
+        try:
+            return json.loads(match_fallback.group(0).strip())
+        except Exception:
+            pass
+    return None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -55,28 +77,60 @@ class ChatRequest(BaseModel):
     session_id: Optional[str] = "default"
 
 @app.get("/chart/{thread_id}")
-async def get_chart(thread_id: str, current_user: dict = Depends(get_current_user)):
+async def get_chart(thread_id: str):
     """
-    Endpoint phục vụ file chart.png sinh ra cho thread cụ thể.
+    Endpoint serving chart.png generated for a specific thread.
     """
-    if current_user["role"] != "ADMIN" and not thread_id.startswith(f"{current_user['id']}_"):
-        raise HTTPException(status_code=403, detail="Access denied. You do not own this session.")
-        
+    # 1. Check persistent charts directory
+    persistent_path = DATA_DIR / "charts" / f"{thread_id}.png"
+    if os.path.exists(persistent_path):
+        return FileResponse(str(persistent_path), media_type="image/png")
+
+    # 2. Fallback to temp directory
     chart_path = TEMP_DIR / thread_id / "chart.png"
-    if not os.path.exists(chart_path):
-        raise HTTPException(status_code=404, detail="Chart not found for this session")
-    return FileResponse(str(chart_path), media_type="image/png")
+    if os.path.exists(chart_path):
+        return FileResponse(str(chart_path), media_type="image/png")
+        
+    raise HTTPException(status_code=404, detail="Chart not found for this session")
+
+def persist_chart(src_path: str, dest_id: str):
+    import shutil
+    if src_path and os.path.exists(src_path):
+        try:
+            charts_dir = DATA_DIR / "charts"
+            charts_dir.mkdir(parents=True, exist_ok=True)
+            dest_path = charts_dir / f"{dest_id}.png"
+            shutil.copy2(src_path, dest_path)
+            print(f"[Chart] Successfully persisted chart to {dest_path}")
+        except Exception as e:
+            print(f"[Chart Warning] Failed to persist chart: {e}")
 
 @app.get("/chat-stream")
-async def chat_stream(message: str, thread_id: str, current_user: dict = Depends(get_current_user)):
+async def chat_stream(
+    message: str, 
+    thread_id: str, 
+    ground_truth: Optional[str] = None, 
+    current_user: dict = Depends(get_current_user)
+):
     """
-    Endpoint SSE để stream kết quả từ LangGraph.
+    SSE endpoint to stream results from LangGraph.
     """
     scoped_thread_id = f"{current_user['id']}_{thread_id}"
     
     async def event_generator():
-        inputs = {"messages": [HumanMessage(content=message)], "steps": []}
-        config = {"configurable": {"thread_id": scoped_thread_id, "session_tmp_dir": str(TEMP_DIR / scoped_thread_id)}}
+        inputs = {
+            "messages": [HumanMessage(content=message)],
+            "steps": [],
+            "ground_truth": ground_truth
+        }
+
+        config = {
+            "configurable": {
+                "thread_id": scoped_thread_id, 
+                "session_tmp_dir": str(TEMP_DIR / scoped_thread_id),
+                "user_id": current_user["id"]
+            }
+        }
         
         # Ensure thread tmp dir exists
         (TEMP_DIR / scoped_thread_id).mkdir(parents=True, exist_ok=True)
@@ -84,38 +138,77 @@ async def chat_stream(message: str, thread_id: str, current_user: dict = Depends
         try:
             graph_app = get_graph_app()
             active_chart_path = None # Track accumulated chart path in this session
+            active_chart_data = None
+            trace_steps = []
             async for output in graph_app.astream(inputs, config=config):
                 for node, values in output.items():
                     # Accumulate chart path if any node produced it (e.g., coder)
                     if "chart_path" in values and values["chart_path"]:
                         active_chart_path = values["chart_path"]
+                    if "execution_result" in values and values["execution_result"]:
+                        parsed = extract_chart_data(values["execution_result"])
+                        if parsed:
+                            active_chart_data = parsed
                     
-                    # Gửi trạng thái node (Thought Process)
+                    # Send node status (Thought Process)
                     step_msg = values["steps"][-1] if values.get("steps") else f"Executing {node}..."
+                    trace_steps.append({"node": node, "output": step_msg})
                     yield {
                         "event": "step",
                         "data": json.dumps({"node": node, "output": step_msg})
                     }
                     
-                    # Nếu là node cuối hoặc có final_answer
+                    # If it is the final node or has a final_answer
                     if "final_answer" in values:
-                        chart_url = f"/chart/{scoped_thread_id}" if active_chart_path and os.path.exists(active_chart_path) else None
+                        clean_answer = values["final_answer"].replace("[CHART_01_RENDERED]", "").strip()
+                        if active_chart_path:
+                            persist_chart(active_chart_path, scoped_thread_id)
+                        chart_url = f"/chart/{scoped_thread_id}" if active_chart_path and (os.path.exists(active_chart_path) or os.path.exists(DATA_DIR / "charts" / f"{scoped_thread_id}.png")) else None
+                        active_warnings = values.get("warnings", [])
                         yield {
                             "event": "final_answer",
                             "data": json.dumps({
-                                "content": values["final_answer"],
-                                "chart_url": chart_url
+                                "content": clean_answer,
+                                "chart_url": chart_url,
+                                "chart_data": active_chart_data,
+                                "chart_type": "bar"
                             })
                         }
+                        # Write the trace to localized trace storage
+                        from core.logger import write_agent_trace
+                        write_agent_trace(
+                            thread_id=scoped_thread_id,
+                            message=message,
+                            steps=trace_steps,
+                            final_answer=clean_answer,
+                            chart_url=chart_url
+                        )
+                        # TIP-005 Telemetry validation logging
+                        from core.database import log_session_audit
+                        log_session_audit(
+                            session_id=scoped_thread_id,
+                            question=message,
+                            answer=clean_answer,
+                            steps=[s["output"] for s in trace_steps],
+                            chart_b64=chart_url,
+                            warnings=active_warnings
+                        )
             
-            # Gửi tín hiệu kết thúc
+            # Send end signal
             yield {"event": "done", "data": "end"}
+            
+            # TIP-005: cleanup temp folder session lifecycle close
+            from core.database import cleanup_session
+            cleanup_session(scoped_thread_id, str(TEMP_DIR / scoped_thread_id))
             
         except Exception as e:
             yield {
                 "event": "error",
                 "data": json.dumps({"detail": str(e)})
             }
+            # Cleanup on error as well
+            from core.database import cleanup_session
+            cleanup_session(scoped_thread_id, str(TEMP_DIR / scoped_thread_id))
 
     return EventSourceResponse(event_generator())
 
@@ -125,8 +218,8 @@ _in_memory_rates = {}
 @app.get("/api/v1/demo")
 async def demo_stream(message: str, session_id: str):
     """
-    Endpoint Demo API không cần JWT, Rate limited 3 lần / Session.
-    Cố định truy vấn dữ liệu BCTC FPT 2025.
+    Demo API endpoint without JWT, rate limited to 3 queries per Session.
+    Fixes queries to FPT 2025 Financial Reports data.
     """
     async def demo_event_generator():
         try:
@@ -155,11 +248,11 @@ async def demo_stream(message: str, session_id: str):
                 }
                 return
 
-            # 2. Trực tiếp gọi LangGraph workflow với `source_filter` nhúng cố định
+            # 2. Directly invoke LangGraph workflow with fixed embedded `source_filter`
             inputs = {
                 "messages": [HumanMessage(content=message)], 
                 "steps": [],
-                "source_filter": "15767250-129f-4839-ba16-167472976d62.md" # Cố định tài liệu FPT 2025
+                "source_filter": "15767250-129f-4839-ba16-167472976d62.md" # Fixed FPT 2025 document
             }
             
             config = {
@@ -173,28 +266,49 @@ async def demo_stream(message: str, session_id: str):
 
             graph_app = get_graph_app()
             active_chart_path = None
+            active_chart_data = None
+            trace_steps = []
             
             async for output in graph_app.astream(inputs, config=config):
                 for node, values in output.items():
                     if "chart_path" in values and values["chart_path"]:
                         active_chart_path = values["chart_path"]
+                    if "execution_result" in values and values["execution_result"]:
+                        parsed = extract_chart_data(values["execution_result"])
+                        if parsed:
+                            active_chart_data = parsed
                     
-                    # Mapping các Thought steps (Thinking UI cho frontend)
+                    # Map the thought steps (Thinking UI for frontend)
                     step_msg = values["steps"][-1] if values.get("steps") else f"Executing {node}..."
+                    trace_steps.append({"node": node, "output": step_msg})
                     yield {
                         "event": "step",
                         "data": json.dumps({"node": node, "output": step_msg})
                     }
                     
                     if "final_answer" in values:
-                        chart_url = f"/chart/demo_{session_id}" if active_chart_path and os.path.exists(active_chart_path) else None
+                        clean_answer = values["final_answer"].replace("[CHART_01_RENDERED]", "").strip()
+                        if active_chart_path:
+                            persist_chart(active_chart_path, f"demo_{session_id}")
+                        chart_url = f"/chart/demo_{session_id}" if active_chart_path and (os.path.exists(active_chart_path) or os.path.exists(DATA_DIR / "charts" / f"demo_{session_id}.png")) else None
                         yield {
                             "event": "final_answer",
                             "data": json.dumps({
-                                "content": values["final_answer"],
-                                "chart_url": chart_url
+                                "content": clean_answer,
+                                "chart_url": chart_url,
+                                "chart_data": active_chart_data,
+                                "chart_type": "bar"
                             })
                         }
+                        # Write the trace to localized trace storage
+                        from core.logger import write_agent_trace
+                        write_agent_trace(
+                            thread_id=f"demo_{session_id}",
+                            message=message,
+                            steps=trace_steps,
+                            final_answer=clean_answer,
+                            chart_url=chart_url
+                        )
             
             yield {"event": "done", "data": "end"}
 

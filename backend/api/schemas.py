@@ -5,6 +5,8 @@ class ChatRequest(BaseModel):
     """Schema cho yêu cầu chat."""
     message: str = Field(..., description="Nội dung tin nhắn từ người dùng")
     session_id: str = Field("default", description="ID phiên làm việc để duy trì ngữ cảnh (thread_id)")
+    ground_truth: Optional[str] = Field(None, description="Nhãn thực tế phục vụ tính Confusion Matrix ở Chương 4")
+
 
 class ChatResponse(BaseModel):
     """Schema cho phản hồi chat."""

@@ -2,6 +2,18 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Lumo AI E2E Chat Flow', () => {
   test('should load the chat interface and send a message', async ({ page }) => {
+    // Mock authenticated user session
+    await page.route('**/api/v1/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'user-123', email: 'test@example.com', full_name: 'Test User', role: 'USER' })
+      });
+    });
+    await page.route('**/health', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) });
+    });
+
     // Intercept and mock the SSE endpoint /chat-stream
     await page.route('**/chat-stream*', async (route) => {
       await route.fulfill({
@@ -23,7 +35,7 @@ test.describe('Lumo AI E2E Chat Flow', () => {
     });
 
     // 1. Mở trang chủ React
-    await page.goto('http://localhost:5174');
+    await page.goto('http://localhost:5173');
 
     // 2. Kiểm tra các thành phần UI cơ bản của Lumo AI
     await expect(page.locator('aside').first()).toBeVisible();
@@ -31,7 +43,7 @@ test.describe('Lumo AI E2E Chat Flow', () => {
     await expect(page.locator('h2:has-text("Financial Intelligence Agent")')).toBeVisible();
 
     // 3. Nhập câu hỏi và gửi
-    const input = page.locator('input[placeholder*="Hỏi AI về báo cáo"]');
+    const input = page.locator('input[placeholder*="Ask AI about"]');
     await expect(input).toBeVisible();
     await input.fill('Lợi nhuận của FPT năm 2023?');
     await input.press('Enter');
@@ -48,8 +60,20 @@ test.describe('Lumo AI E2E Chat Flow', () => {
   });
 
   test('should clear inputs correctly on input interactive events', async ({ page }) => {
-    await page.goto('http://localhost:5174');
-    const input = page.locator('input[placeholder*="Hỏi AI về báo cáo"]');
+    // Mock authenticated user session
+    await page.route('**/api/v1/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'user-123', email: 'test@example.com', full_name: 'Test User', role: 'USER' })
+      });
+    });
+    await page.route('**/health', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) });
+    });
+
+    await page.goto('http://localhost:5173');
+    const input = page.locator('input[placeholder*="Ask AI about"]');
     await input.fill('Temporary query');
     await expect(input).toHaveValue('Temporary query');
   });

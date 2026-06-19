@@ -26,6 +26,25 @@ const DynamicChart: React.FC<DynamicChartProps> = ({ data, type = 'bar' }) => {
   
   const colors = ['#6366F1', '#10B981', '#F59E0B', '#EF4444'];
 
+  const formatFinancialValue = (value: number | string) => {
+    if (typeof value !== 'number') {
+      const num = Number(value);
+      if (isNaN(num)) return value;
+      value = num;
+    }
+    const absValue = Math.abs(value);
+    if (absValue >= 1e12) {
+      return `${(value / 1e12).toLocaleString('en-US', { maximumFractionDigits: 2 })} T`;
+    }
+    if (absValue >= 1e9) {
+      return `${(value / 1e9).toLocaleString('en-US', { maximumFractionDigits: 2 })} B`;
+    }
+    if (absValue >= 1e6) {
+      return `${(value / 1e6).toLocaleString('en-US', { maximumFractionDigits: 2 })} M`;
+    }
+    return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  };
+
   const renderChart = () => {
     if (type === 'line') {
       return (
@@ -42,8 +61,10 @@ const DynamicChart: React.FC<DynamicChartProps> = ({ data, type = 'bar' }) => {
             axisLine={false} 
             tickLine={false} 
             tick={{ fill: '#94A3B8', fontSize: 12 }} 
+            tickFormatter={formatFinancialValue}
           />
           <Tooltip 
+            formatter={(value: any) => [formatFinancialValue(value)]}
             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} 
           />
           <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
@@ -76,9 +97,11 @@ const DynamicChart: React.FC<DynamicChartProps> = ({ data, type = 'bar' }) => {
           axisLine={false} 
           tickLine={false} 
           tick={{ fill: '#94A3B8', fontSize: 12 }} 
+          tickFormatter={formatFinancialValue}
         />
         <Tooltip 
           cursor={{ fill: '#F8FAFC' }}
+          formatter={(value: any) => [formatFinancialValue(value)]}
           contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} 
         />
         <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />

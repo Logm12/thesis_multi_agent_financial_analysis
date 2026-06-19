@@ -34,8 +34,22 @@ test.describe('File Upload Validation E2E Tests (TIP-001)', () => {
     }
   });
 
+  test.beforeEach(async ({ page }) => {
+    // Mock authenticated user session
+    await page.route('**/api/v1/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'user-123', email: 'test@example.com', full_name: 'Test User', role: 'USER' })
+      });
+    });
+    await page.route('**/health', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) });
+    });
+  });
+
   test('Scenario 1: Should block non-PDF files immediately at Frontend and not call upload API', async ({ page }) => {
-    await page.goto('http://localhost:5174');
+    await page.goto('http://localhost:5173');
 
     // Monitor for any POST upload API calls
     let uploadApiCalled = false;
@@ -50,7 +64,7 @@ test.describe('File Upload Validation E2E Tests (TIP-001)', () => {
     await page.locator('#file-upload').setInputFiles(txtFile);
     await page.waitForTimeout(2000);
     await page.screenshot({ path: 'screenshot_after_upload.png' });
-    const toast = page.locator('text=File không hợp lệ. Vui lòng chỉ tải lên báo cáo định dạng PDF.');
+    const toast = page.locator('text=Invalid file. Please upload PDF reports only.');
     await expect(toast).toBeVisible({ timeout: 5000 });
 
     // Assert API was NOT called
@@ -58,7 +72,7 @@ test.describe('File Upload Validation E2E Tests (TIP-001)', () => {
   });
 
   test('Scenario 2: Should block files larger than 100MB at Frontend and not call upload API', async ({ page }) => {
-    await page.goto('http://localhost:5174');
+    await page.goto('http://localhost:5173');
 
     // Monitor for any POST upload API calls
     let uploadApiCalled = false;
@@ -72,7 +86,7 @@ test.describe('File Upload Validation E2E Tests (TIP-001)', () => {
     await page.locator('#file-upload').setInputFiles(largePdf);
 
     // Verify size validation toast error is shown
-    const toast = page.locator('text=Kích thước file quá lớn. Vui lòng tải lên file nhỏ hơn 100MB.');
+    const toast = page.locator('text=File too large. Please upload a file smaller than 100MB.');
     await expect(toast).toBeVisible({ timeout: 5000 });
 
     // Assert API was NOT called
@@ -80,7 +94,7 @@ test.describe('File Upload Validation E2E Tests (TIP-001)', () => {
   });
 
   test('Scenario 3: Should successfully call upload API for valid PDF under 100MB', async ({ page }) => {
-    await page.goto('http://localhost:5174');
+    await page.goto('http://localhost:5173');
 
     // Monitor and intercept POST upload API calls
     let uploadApiCalled = false;
@@ -98,7 +112,7 @@ test.describe('File Upload Validation E2E Tests (TIP-001)', () => {
     await page.locator('#file-upload').setInputFiles(validPdf);
 
     // Verify success toast or loading toast is shown
-    const loadingToast = page.locator('text=Đang phân tích tài liệu:');
+    const loadingToast = page.locator('text=Analyzing document:');
     await expect(loadingToast).toBeVisible({ timeout: 5000 });
 
     // Assert API WAS called

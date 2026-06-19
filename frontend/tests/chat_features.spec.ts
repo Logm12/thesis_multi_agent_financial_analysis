@@ -2,6 +2,18 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Chat Streaming and Citation E2E Tests (TIP-002)', () => {
   test('Scenario 1 & 2: Streaming steps should display correctly and citation tooltip should show on hover', async ({ page }) => {
+    // Mock authenticated user session
+    await page.route('**/api/v1/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'user-123', email: 'test@example.com', full_name: 'Test User', role: 'USER' })
+      });
+    });
+    await page.route('**/health', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ status: 'ok' }) });
+    });
+
     // Intercept and mock the SSE endpoint /chat-stream
     await page.route('**/chat-stream*', async (route) => {
       await route.fulfill({
@@ -28,10 +40,10 @@ test.describe('Chat Streaming and Citation E2E Tests (TIP-002)', () => {
       console.log(`[BROWSER CONSOLE ${msg.type()}]:`, msg.text());
     });
 
-    await page.goto('http://localhost:5174');
+    await page.goto('http://localhost:5173');
 
     // Send a message
-    const input = page.locator('input[placeholder*="Hỏi AI về báo cáo"]');
+    const input = page.locator('input[placeholder*="Ask AI about"]');
     await input.fill('So sánh kết quả kinh doanh năm 2024');
     await input.press('Enter');
 
@@ -56,6 +68,6 @@ test.describe('Chat Streaming and Citation E2E Tests (TIP-002)', () => {
     // Verify tooltip is shown
     const tooltip = page.locator('#citation-tooltip-1');
     await expect(tooltip).toBeVisible();
-    await expect(tooltip).toContainText('Xem trích dẫn trực tiếp trên tài liệu PDF');
+    await expect(tooltip).toContainText('View citation directly on PDF document');
   });
 });

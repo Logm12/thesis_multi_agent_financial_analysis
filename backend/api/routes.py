@@ -16,15 +16,18 @@ async def chat_endpoint(request: ChatRequest, current_user: dict = Depends(get_c
     # 1. Prepare input for LangGraph
     inputs = {
         "messages": [HumanMessage(content=request.message)],
-        "steps": []
+        "steps": [],
+        "ground_truth": request.ground_truth
     }
+
     
     # 2. Config (thread_id for persistence, scoped to current user ID)
     scoped_session_id = f"{current_user['id']}_{request.session_id}"
     config = {
         "configurable": {
             "thread_id": scoped_session_id,
-            "session_tmp_dir": str(TEMP_DIR / scoped_session_id)
+            "session_tmp_dir": str(TEMP_DIR / scoped_session_id),
+            "user_id": current_user["id"]
         }
     }
     
