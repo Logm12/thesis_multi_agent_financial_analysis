@@ -1,5 +1,4 @@
 
-from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from .state import AgentState
 from core.config import SYNTHESIZER_MODEL
@@ -40,7 +39,9 @@ Response Requirements:
 
 Write the final answer:"""
 
-def synthesizer_node(state: AgentState) -> dict:
+from langchain_core.runnables import RunnableConfig
+
+def synthesizer_node(state: AgentState, config: RunnableConfig = None) -> dict:
     """Node tổng hợp câu trả lời cuối cùng."""
     question = state["question"]
     error_count = state.get("error_count", 0)
@@ -81,13 +82,26 @@ def synthesizer_node(state: AgentState) -> dict:
         ("system", SYNTHESIZER_PROMPT),
         ("user", "User query: {query}")
     ])
+    
+    # Access runnable config to get thread_id for tracking token usage
+    from core.logger import TokenUsageCallbackHandler
+    
+    # Retrieve thread_id from context/config or default
+    thread_id = "unknown_thread"
+    if isinstance(config, dict) and "configurable" in config:
+        thread_id = config["configurable"].get("thread_id", "unknown_thread")
+    elif hasattr(config, "get"):
+        thread_id = config.get("configurable", {}).get("thread_id", "unknown_thread")
+        
+    token_callback = TokenUsageCallbackHandler(session_id=thread_id, node_name="synthesizer")
+    
     chain = prompt | llm
     
     response = chain.invoke({
         "query": question,
         "data": data,
         "error_count": error_count
-    })
+    }, config={"callbacks": [token_callback]})
     
     final_answer = response.content
     

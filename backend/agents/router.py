@@ -1,7 +1,5 @@
-import os
 from typing import Literal
 from pydantic import BaseModel, Field
-from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from .state import AgentState
 from core.config import ROUTER_MODEL
@@ -44,7 +42,9 @@ Your task is to classify the user's query into one of the following categories:
 Analyze the question carefully and return the most appropriate classification."""
 
 
-def router_node(state: AgentState) -> dict:
+from langchain_core.runnables import RunnableConfig
+
+def router_node(state: AgentState, config: RunnableConfig = None) -> dict:
     """Node phân loại ý định sử dụng OpenAI GPT-4o-mini."""
     user_question = (
         state["messages"][-1].content
@@ -56,8 +56,20 @@ def router_node(state: AgentState) -> dict:
         [("system", ROUTER_PROMPT), ("human", "{question}")]
     )
 
+    # Access runnable config to get thread_id for tracking token usage
+    from core.logger import TokenUsageCallbackHandler
+    
+    # Retrieve thread_id from context/config or default
+    thread_id = "unknown_thread"
+    if isinstance(config, dict) and "configurable" in config:
+        thread_id = config["configurable"].get("thread_id", "unknown_thread")
+    elif hasattr(config, "get"):
+        thread_id = config.get("configurable", {}).get("thread_id", "unknown_thread")
+        
+    token_callback = TokenUsageCallbackHandler(session_id=thread_id, node_name="router")
+    
     chain = prompt | structured_llm
-    result: RouteQuery = chain.invoke({"question": user_question})
+    result: RouteQuery = chain.invoke({"question": user_question}, config={"callbacks": [token_callback]})
 
     print(f"[Router] Intent: {result.intent} | Reason: {result.reasoning}")
 

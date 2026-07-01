@@ -1,12 +1,10 @@
 import os
 import re
 import json
-from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableConfig
 from .state import AgentState
-from core.config import ROUTER_MODEL
 from backend.tools.sandbox import SafePythonREPL
 
 from langchain_ollama import ChatOllama
@@ -146,13 +144,25 @@ def coder_node(state: AgentState, config: RunnableConfig) -> dict:
     prompt = ChatPromptTemplate.from_messages([("system", CODER_PROMPT)])
     chain = prompt | llm
     
+    # Access runnable config to get thread_id for tracking token usage
+    from core.logger import TokenUsageCallbackHandler
+    
+    # Retrieve thread_id from context/config or default
+    thread_id = "unknown_thread"
+    if isinstance(config, dict) and "configurable" in config:
+        thread_id = config["configurable"].get("thread_id", "unknown_thread")
+    elif hasattr(config, "get"):
+        thread_id = config.get("configurable", {}).get("thread_id", "unknown_thread")
+        
+    token_callback = TokenUsageCallbackHandler(session_id=thread_id, node_name="coder")
+    
     response = chain.invoke({
         "question": question,
         "context": context,
         "finance_dict": finance_dict_str,
         "last_error": last_error,
         "chart_path": chart_path.replace("\\", "/") # Use forward slash for Python script
-    })
+    }, config={"callbacks": [token_callback]})
     
     code = response.content.strip()
     code_match = re.search(r'```python\s*(.*?)\s*```', code, re.DOTALL)

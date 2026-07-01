@@ -30,10 +30,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from api.trace_api import router as api_trace_router
+
 # Đăng ký routes
 app.include_router(api_v1_router)
 app.include_router(api_auth_router)
 app.include_router(api_document_router)
+app.include_router(api_trace_router)
 
 @app.get("/health")
 async def root_health():

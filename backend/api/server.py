@@ -1,15 +1,14 @@
 import os
 import json
-import asyncio
 from typing import Optional
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from langchain_core.messages import HumanMessage
 from sse_starlette.sse import EventSourceResponse
 
-from agents.graph import get_graph_app, ingest_pdf
+from agents.graph import get_graph_app
 from core.config import DATA_DIR, TEMP_DIR, REDIS_URL
 from core.database import init_db
 from api.auth import router as auth_router, get_current_user
@@ -64,9 +63,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from api.trace_api import router as trace_router
+
 app.include_router(auth_router)
 app.include_router(routes_router)
 app.include_router(document_router)
+app.include_router(trace_router)
 
 RAW_DATA_DIR = DATA_DIR / "raw"
 RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -324,6 +326,15 @@ async def demo_stream(message: str, session_id: str):
 def health_check():
     return {"status": "ok"}
 
+# Serve Trace Dashboard UI
+from fastapi.responses import RedirectResponse
+trace_dashboard_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "trace-dashboard")
+if os.path.exists(trace_dashboard_path):
+    @app.get("/trace")
+    async def redirect_trace():
+        return RedirectResponse(url="/trace/")
+    app.mount("/trace", StaticFiles(directory=trace_dashboard_path, html=True), name="trace-dashboard")
+
 # Serve React Static Files
 static_path = os.path.join(os.path.dirname(__file__), "static")
 if os.path.exists(static_path):
@@ -331,7 +342,7 @@ if os.path.exists(static_path):
     
     @app.get("/{full_path:path}")
     async def serve_react(full_path: str):
-        if full_path.startswith("api/") or full_path in ["chat-stream", "upload", "health"]:
+        if full_path.startswith("api/") or full_path.startswith("trace") or full_path in ["chat-stream", "upload", "health"]:
             return # Let FastAPI handle it
         return HTMLResponse(content=open(os.path.join(static_path, "index.html")).read())
 

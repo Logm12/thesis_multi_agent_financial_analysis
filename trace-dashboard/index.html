@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thesis Agent Trace Dashboard</title>
+  <!-- Google Fonts - Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-neutral-bg1 text-text-primary antialiased font-sans">
+
+  <!-- LOGIN MODAL -->
+  <div id="login-modal" class="fixed inset-0 glass-overlay flex items-center justify-center z-50">
+    <div class="glass-card p-8 max-w-md w-full mx-4 animate-in">
+      <div class="text-center mb-6">
+        <div class="inline-block p-3 rounded-full bg-brand-subtle mb-3">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold tracking-tight text-text-primary">Trace Dashboard</h2>
+        <p class="text-text-secondary text-sm mt-1">Authenticate as Administrator to continue</p>
+      </div>
+      
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-text-muted mb-1">Username</label>
+          <input type="text" id="username-input" class="w-full px-4 py-2.5 rounded glass-input text-text-primary focus:outline-none" required placeholder="admin">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-text-muted mb-1">Password</label>
+          <input type="password" id="password-input" class="w-full px-4 py-2.5 rounded glass-input text-text-primary focus:outline-none" required placeholder="••••••••">
+        </div>
+        <div id="login-error" class="text-status-error text-xs hidden">Incorrect credentials. Please try again.</div>
+        <button type="submit" class="w-full py-3 rounded bg-brand hover:bg-brand-hover text-white font-semibold transition-all duration-200 shadow-glow hover:shadow-glow-lg">
+          Log In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN APPLICATION SHELL -->
+  <div id="app-shell" class="hidden flex h-screen overflow-hidden">
+    <!-- SIDEBAR -->
+    <aside class="glass-panel w-72 flex flex-col border-r border-border-subtle">
+      <div class="p-6 border-b border-border-subtle flex items-center gap-3">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <h1 class="text-md font-bold text-text-primary uppercase tracking-wider">Antigravity</h1>
+          <span class="text-[10px] bg-brand-subtle text-brand px-2 py-0.5 rounded font-mono">TRACE v1.0</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1">
+        <button id="nav-sessions" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded text-sm text-left transition-colors duration-200">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+          Audit Sessions
+        </button>
+        <button id="nav-stats" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded text-sm text-left transition-colors duration-200">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+          </svg>
+          Token & Cost Statistics
+        </button>
+        <button id="nav-logs" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded text-sm text-left transition-colors duration-200">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Raw Logs Stream
+        </button>
+      </nav>
+
+      <div class="p-4 border-t border-border-subtle flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-status-success animate-pulse"></div>
+          <span class="text-xs text-text-secondary font-mono">DB connected</span>
+        </div>
+        <button id="logout-btn" class="text-xs text-text-muted hover:text-status-error transition-colors">
+          Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- CONTENT WRAPPER -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-neutral-bg2">
+      <!-- HEADER -->
+      <header class="h-16 border-b border-border-subtle flex items-center justify-between px-8 bg-neutral-bg3/50 backdrop-blur">
+        <h2 id="page-title" class="text-lg font-semibold tracking-wide text-text-primary">Trace Audit Sessions</h2>
+        <div class="flex items-center gap-4">
+          <button id="refresh-btn" class="p-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.5"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- PANELS (SPA Views) -->
+      <div id="content-container" class="flex-1 overflow-y-auto p-8">
+        
+        <!-- PANEL: AUDIT SESSIONS -->
+        <section id="panel-sessions" class="space-y-6">
+          <div class="flex gap-4">
+            <input type="text" id="search-sessions" placeholder="Filter by thread ID or query..." class="flex-1 px-4 py-2.5 rounded glass-input text-text-primary text-sm focus:outline-none">
+          </div>
+
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <!-- Left panel: Sessions List -->
+            <div class="xl:col-span-1 glass-card overflow-hidden flex flex-col h-[650px]">
+              <div class="p-4 border-b border-border-subtle bg-white/5 flex items-center justify-between">
+                <span class="text-xs font-semibold text-text-secondary uppercase">Sessions (Recorded)</span>
+                <span id="session-count" class="text-xs px-2 py-0.5 rounded bg-brand text-white font-mono">0</span>
+              </div>
+              <div id="sessions-list" class="flex-1 overflow-y-auto divide-y divide-border-subtle">
+                <!-- Session items added via app.js -->
+              </div>
+            </div>
+
+            <!-- Right panel: Session details -->
+            <div class="xl:col-span-2 glass-card p-6 flex flex-col h-[650px] overflow-hidden" id="detail-card">
+              <div class="flex-1 flex flex-col items-center justify-center text-text-muted" id="detail-placeholder">
+                <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24" class="mb-4 text-white/10">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                </svg>
+                <p class="text-sm">Select a session from the list to audit the execution trace.</p>
+              </div>
+
+              <!-- Interactive details (hidden by default) -->
+              <div id="detail-content" class="hidden flex-1 flex flex-col h-full overflow-hidden">
+                <div class="border-b border-border-subtle pb-4 mb-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <span id="detail-thread-id" class="text-xs font-mono text-brand bg-brand-subtle px-2 py-0.5 rounded">thread_id</span>
+                    <span id="detail-timestamp" class="text-xs text-text-muted">timestamp</span>
+                  </div>
+                  <h3 id="detail-message" class="text-md font-semibold text-text-primary">"User request goes here"</h3>
+                </div>
+
+                <div class="flex-1 overflow-y-auto pr-2 space-y-6">
+                  <!-- GANTT TIMELINE VISUALIZATION -->
+                  <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Agent Orchestration Graph</h4>
+                    <div id="gantt-chart" class="space-y-3 bg-black/25 p-4 rounded-lg border border-border-subtle">
+                      <!-- Nodes with timelines dynamically rendered here -->
+                    </div>
+                  </div>
+
+                  <!-- AGENT NODE INSPECTOR -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="glass-card p-4 bg-black/20">
+                      <h5 class="text-xs font-bold text-text-secondary uppercase mb-2">Step Execution Steps</h5>
+                      <div id="steps-timeline" class="space-y-3 font-mono text-xs text-text-secondary">
+                        <!-- Step logs -->
+                      </div>
+                    </div>
+                    <div class="glass-card p-4 bg-black/20">
+                      <h5 class="text-xs font-bold text-text-secondary uppercase mb-2">Token Cost Breakdown</h5>
+                      <div id="node-token-details" class="space-y-3 font-mono text-xs text-text-secondary">
+                        <!-- Token details -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- FINAL SYSTEM ANSWER -->
+                  <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-text-secondary mb-2">Final Answer Response</h4>
+                    <div id="detail-final-answer" class="bg-black/35 p-4 rounded-lg text-sm text-text-secondary border border-border-subtle whitespace-pre-wrap leading-relaxed">
+                      Answer
+                    </div>
+                  </div>
+
+                  <!-- RENDERED CHART FILE -->
+                  <div id="chart-render-container" class="hidden">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-text-secondary mb-2">Rendered Visualization Chart</h4>
+                    <div class="border border-border-subtle rounded-lg overflow-hidden max-w-lg bg-black/35">
+                      <img id="detail-chart-img" src="" alt="Session Chart" class="w-full h-auto">
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- PANEL: TOKEN STATS -->
+        <section id="panel-stats" class="hidden space-y-8">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-card p-6 bg-brand-subtle border border-brand/20">
+              <h4 class="text-xs uppercase tracking-wider font-semibold text-text-secondary">Total Estimated Costs</h4>
+              <p id="stat-total-cost" class="text-3xl font-bold text-brand mt-2">$0.000000</p>
+            </div>
+            <div class="glass-card p-6">
+              <h4 class="text-xs uppercase tracking-wider font-semibold text-text-secondary">Total Prompt Tokens</h4>
+              <p id="stat-total-prompt" class="text-3xl font-bold text-text-primary mt-2">0</p>
+            </div>
+            <div class="glass-card p-6">
+              <h4 class="text-xs uppercase tracking-wider font-semibold text-text-secondary">Total Completion Tokens</h4>
+              <p id="stat-total-completion" class="text-3xl font-bold text-text-primary mt-2">0</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="glass-card p-6">
+              <h4 class="text-sm font-semibold mb-4">Token Distribution by Node (Execution Flow)</h4>
+              <div class="h-64 flex items-center justify-center">
+                <canvas id="node-bar-chart" width="400" height="250" class="w-full h-full"></canvas>
+              </div>
+            </div>
+            <div class="glass-card p-6">
+              <h4 class="text-sm font-semibold mb-4">Estimated Costs by Model Family</h4>
+              <div class="h-64 flex items-center justify-center">
+                <canvas id="model-bar-chart" width="400" height="250" class="w-full h-full"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANEL: RAW SYSTEM LOGS STREAM -->
+        <section id="panel-logs" class="hidden space-y-6">
+          <div class="flex justify-between items-center bg-white/5 p-4 rounded border border-border-subtle">
+            <div>
+              <h4 class="text-sm font-semibold">Live Server Sent Events (SSE) Stream</h4>
+              <p class="text-xs text-text-secondary mt-1">Real-time system notification logs output from execution trace flow.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="sse-indicator" class="w-3 h-3 rounded-full bg-status-warning"></span>
+              <span id="sse-status" class="text-xs font-mono text-text-secondary">Listening for update...</span>
+            </div>
+          </div>
+
+          <div class="glass-card bg-black/45 p-6 rounded-lg font-mono text-xs overflow-hidden flex flex-col h-[500px]">
+            <div class="flex-1 overflow-y-auto space-y-2 select-text" id="sse-logs-area">
+              <div class="text-text-muted">[00:00:00] Web Stream established. Waiting for node logs...</div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

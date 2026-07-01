@@ -716,7 +716,7 @@
   {
     "id": "TC_020_EN",
     "category": "Multi_Step_Reasoning",
-    "question": "Draw a pie chart showing the asset structure (Current assets and Non-current assets) of 2025.",
+    "question": "Draw a pie chart showing the asset structure (Current assets and Non-current assets) of 2025. (FPT)",
     "ground_truth": "The system must generate Python code to draw a pie chart and return the image output, along with an explanation of the asset structure."
   },
   {

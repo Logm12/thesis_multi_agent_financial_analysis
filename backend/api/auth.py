@@ -23,7 +23,7 @@ class UserRegister(BaseModel):
     full_name: str = Field(..., min_length=1, description="Full Name")
 
 class UserLogin(BaseModel):
-    email: EmailStr = Field(..., description="Email address")
+    email: str = Field(..., description="Email address or username")
     password: str = Field(..., description="Password")
 
 class UserResponse(BaseModel):

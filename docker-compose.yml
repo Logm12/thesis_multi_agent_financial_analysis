@@ -30,6 +30,7 @@ services:
       - ./backend/logs:/app/backend/logs
       - ./backend:/app/backend
       - ./.env:/app/.env
+      - ./trace-dashboard:/app/trace-dashboard
     environment:
       - PYTHONUNBUFFERED=1
       - POSTGRES_URL=postgresql://langgraph:langgraph_pass@postgres:5432/financial_analyzer

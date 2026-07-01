@@ -47,3 +47,18 @@ CREATE TABLE IF NOT EXISTS session_audit (
     warnings JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create token_usage table for tracking token count and estimated cost per node/session
+CREATE TABLE IF NOT EXISTS token_usage (
+    id SERIAL PRIMARY KEY,
+    session_id VARCHAR(255) NOT NULL,
+    node_name VARCHAR(100) NOT NULL,
+    model_name VARCHAR(150) NOT NULL,
+    prompt_tokens INTEGER NOT NULL,
+    completion_tokens INTEGER NOT NULL,
+    cost NUMERIC(10, 6) NOT NULL DEFAULT 0.000000,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_token_usage_session_id ON token_usage(session_id);
+
