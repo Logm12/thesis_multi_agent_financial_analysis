@@ -34,7 +34,7 @@ EMBEDDING_MODEL = "text-embedding-3-small"
 EMBEDDING_DIM = 768  # Match current ChromaDB
 
 ROUTER_MODEL = "gpt-4o-mini"
-SYNTHESIZER_MODEL = "meta/llama-3.3-70b-instruct"
+SYNTHESIZER_MODEL = "nvidia/llama-3.3-nemotron-super-49b-v1.5"
 CODER_MODEL = "qwen2.5-coder-thesis:latest"
 
 # Ollama configuration
