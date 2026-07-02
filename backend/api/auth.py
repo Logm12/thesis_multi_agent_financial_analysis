@@ -184,7 +184,7 @@ async def login(response: Response, credentials: UserLogin):
     # Check if we should disable secure=True in local development
     # If running in local environment without HTTPS, we set secure=False.
     # In production, secure should be True.
-    is_prod = os.getenv("ENV", "development").lower() == "production"
+    is_prod = os.getenv("ENV", "development").lower() == "production" or os.getenv("RENDER") == "true"
     
     response.set_cookie(
         key="access_token",
