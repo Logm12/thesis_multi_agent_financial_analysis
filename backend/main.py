@@ -24,7 +24,12 @@ app = FastAPI(
 # Cấu hình CORS (AC1)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Linh hoạt cho môi trường dev
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://frontend-rust-nu-86.vercel.app"
+    ],
+    allow_origin_regex="https://.*\\.vercel\\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -192,8 +192,8 @@ async def login(response: Response, credentials: UserLogin):
         httponly=True,
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         expires=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        samesite="lax",
-        secure=is_prod,
+        samesite="none" if is_prod else "lax",
+        secure=True if is_prod else False,
         path="/"
     )
     
