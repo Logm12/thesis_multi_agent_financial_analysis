@@ -28,4 +28,4 @@ COPY .env /app/.env
 ENV PYTHONPATH=/app/backend
 EXPOSE 8001
 
-CMD ["python", "-c", "import sys; sys.path.append('/app'); import uvicorn; uvicorn.run('api.server:app', host='0.0.0.0', port=8001)"]
+CMD ["python", "-c", "import os; import sys; sys.path.append('/app'); import uvicorn; uvicorn.run('api.server:app', host='0.0.0.0', port=int(os.getenv('PORT', 8001)))"]
