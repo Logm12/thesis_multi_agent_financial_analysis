@@ -194,6 +194,7 @@ def _parse_single_page(args) -> list:
         else:
             print(f"[Parser-Worker] Scanned page detected at page {page_num + 1}. Running OCR...")
             try:
+                import easyocr
                 _init_worker_reader()
                 
                 # Downsample scaling from 2.0 to 1.5 to speed up by 40%
@@ -216,15 +217,59 @@ def _parse_single_page(args) -> list:
                             "bbox": f"[{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]",
                             "type": "text"
                         })
-            except Exception as ocr_err:
-                print(f"[Parser-Worker] Ignoring OCR error on page {page_num + 1}: {str(ocr_err)}")
-                if page_text:
-                    page_blocks.append({
-                        "text": page_text,
-                        "page": page_num + 1,
-                        "bbox": "[0.0, 0.0, 0.0, 0.0]",
-                        "type": "text"
-                    })
+            except (ImportError, Exception) as ocr_err:
+                print(f"[Parser-Worker] Local OCR not available or failed ({ocr_err}). Falling back to GPT-4o-mini Vision...")
+                try:
+                    import base64
+                    from openai import OpenAI
+                    api_key = os.getenv("OPENAI_API_KEY")
+                    if not api_key:
+                        raise ValueError("OPENAI_API_KEY is not configured")
+                        
+                    client = OpenAI(api_key=api_key)
+                    pix = page.get_pixmap(matrix=fitz.Matrix(1.5, 1.5))
+                    img_bytes = pix.tobytes("png")
+                    base64_image = base64.b64encode(img_bytes).decode("utf-8")
+                    
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {
+                                "role": "user",
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "Trích xuất toàn bộ văn bản tiếng Việt có trong ảnh này. Giữ nguyên cấu trúc, định dạng bảng (nếu có) dưới dạng markdown hoặc text và nội dung chính xác. Chỉ trả về kết quả văn bản trích xuất, không thêm bất kỳ bình luận hay định dạng nào khác ngoài nội dung trích xuất."
+                                    },
+                                    {
+                                        "type": "image_url",
+                                        "image_url": {
+                                            "url": f"data:image/png;base64,{base64_image}"
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        max_tokens=2048
+                    )
+                    text_ocr = response.choices[0].message.content.strip()
+                    if text_ocr:
+                        page_blocks.append({
+                            "text": text_ocr,
+                            "page": page_num + 1,
+                            "bbox": "[0.0, 0.0, 0.0, 0.0]",
+                            "type": "text"
+                        })
+                        print(f"[Parser-Worker] GPT-4o-mini Vision OCR completed successfully for page {page_num + 1}")
+                except Exception as fallback_err:
+                    print(f"[Parser-Worker] GPT-4o-mini Vision fallback failed: {fallback_err}")
+                    if page_text:
+                        page_blocks.append({
+                            "text": page_text,
+                            "page": page_num + 1,
+                            "bbox": "[0.0, 0.0, 0.0, 0.0]",
+                            "type": "text"
+                        })
     else:
         # Text extraction with standard coordinates
         try:
