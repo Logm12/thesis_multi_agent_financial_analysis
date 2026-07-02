@@ -81,6 +81,12 @@ IMPORTANT DATA CLEANING RULES:
 3. Always verify datatypes and cast using the above 4-stage pipeline before calculations.
 4. Wrap all calculation logic in a `try...except Exception as e:` block to log errors as `print(f"[Execution Error] {e}")` instead of crashing.
 5. All text in charts must be in English. Use clear labels, titles, and legends. Do NOT call matplotlib.use() or set rcParams as they are pre-configured by the sandbox.
+6. Make charts highly aesthetic and detailed:
+   - Use professional colors (e.g., Indigo `#4F46E5` for primary data, Emerald `#10B981` for secondary, and Rose `#F43F5E` for comparison/negatives).
+   - Draw exact numeric value labels (data labels) on top of bars or line markers.
+   - For line charts, use markers (e.g., `marker='o'`, `markersize=6`) and professional line styling.
+   - Prevent text overlap by rotating X-axis labels (e.g., `rotation=15`) if years or category names are long.
+   - Adjust layout padding (e.g., `plt.tight_layout()`) to ensure no titles or axis labels are clipped.
 
 --- FEW-SHOT EXAMPLES ---
 Example 1: Calculate ROE using 4-stage column normalization
