@@ -331,6 +331,10 @@ async def demo_stream(message: str, session_id: str):
 def health_check():
     return {"status": "ok"}
 
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "Financial Analyzer API is running"}
+
 # Serve Trace Dashboard UI
 from fastapi.responses import RedirectResponse
 trace_dashboard_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "trace-dashboard")
