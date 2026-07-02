@@ -61,7 +61,7 @@ def load_finance_dict() -> str:
         print(f"[Coder] Cannot load financial formulas dictionary: {e}")
         return "{}"
 
-CODER_PROMPT = """You are a specialized Financial Analysis Coder Agent.
+CODER_PROMPT = r"""You are a specialized Financial Analysis Coder Agent.
 Write Python code using pandas to process the financial data. Note that financial column names might contain Vietnamese diacritics, so handle them correctly.
 
 IMPORTANT: You MUST strictly adhere to the following financial formulas dictionary; do NOT invent or modify formulas:
