@@ -328,10 +328,12 @@ async def demo_stream(message: str, session_id: str):
     return EventSourceResponse(demo_event_generator())
 
 @app.get("/health")
+@app.head("/health")
 def health_check():
     return {"status": "ok"}
 
 @app.get("/")
+@app.head("/")
 def root():
     return {"status": "ok", "message": "Financial Analyzer API is running"}
 
