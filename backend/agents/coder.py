@@ -13,15 +13,21 @@ from core.config import CODER_MODEL, OLLAMA_BASE_URL
 
 # Check if running on Render or if Nvidia NIM is explicitly requested for Coder
 if os.getenv("RENDER") or os.getenv("USE_NVIDIA_FOR_CODER") == "True":
+    nvidia_coder_key = os.getenv("NVIDIA_CODER_API_KEY")
     nvidia_key = os.getenv("NVIDIA_API_KEY")
-    if nvidia_key:
-        print("[Coder] Using NVIDIA NIM (mistralai/mistral-small-4-119b-2603) as Coder LLM on Render/Web.")
+    
+    # Try NVIDIA_CODER_API_KEY first, fallback to NVIDIA_API_KEY
+    active_key = nvidia_coder_key or nvidia_key
+    
+    if active_key:
+        key_name = "NVIDIA_CODER_API_KEY" if nvidia_coder_key else "NVIDIA_API_KEY"
+        print(f"[Coder] Using NVIDIA NIM (mistralai/mistral-small-4-119b-2603) via {key_name} as Coder LLM on Render/Web.")
         from core.nim_client import get_nim_llm
-        llm = get_nim_llm("mistralai/mistral-small-4-119b-2603", temperature=0)
+        llm = get_nim_llm("mistralai/mistral-small-4-119b-2603", temperature=0, api_key=active_key)
     else:
         openai_key = os.getenv("OPENAI_API_KEY")
         if openai_key:
-            print("[Coder Warning] NVIDIA_API_KEY is not set. Falling back to ChatOpenAI (gpt-4o-mini)...")
+            print("[Coder Warning] No NVIDIA API keys set. Falling back to ChatOpenAI (gpt-4o-mini)...")
             llm = ChatOpenAI(
                 model="gpt-4o-mini",
                 temperature=0,

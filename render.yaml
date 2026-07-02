@@ -9,6 +9,8 @@ services:
         sync: false
       - key: NVIDIA_API_KEY
         sync: false
+      - key: NVIDIA_CODER_API_KEY
+        sync: false
       - key: POSTGRES_URL
         sync: false
       - key: REDIS_URL

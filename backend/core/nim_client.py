@@ -25,12 +25,12 @@ def wait_for_rate_limit():
         time.sleep(sleep_time)
     last_call_time = time.time()
 
-def get_nim_llm(model_name: str, temperature: float = 0.0) -> ChatOpenAI:
+def get_nim_llm(model_name: str, temperature: float = 0.0, api_key: Optional[str] = None) -> ChatOpenAI:
     """
     Returns a ChatOpenAI client configured for NVIDIA NIM, falling back to OpenAI
     or local Ollama if NVIDIA keys are not available or requests fail.
     """
-    nvidia_key = os.getenv("NVIDIA_API_KEY")
+    nvidia_key = api_key or os.getenv("NVIDIA_API_KEY")
     openai_key = os.getenv("OPENAI_API_KEY")
     
     # Route OpenAI models directly to ChatOpenAI instead of NVIDIA NIM API
