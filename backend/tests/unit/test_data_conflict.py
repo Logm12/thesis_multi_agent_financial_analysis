@@ -30,8 +30,8 @@ def test_synthesizer_data_conflict_prompt_and_flow():
         content="Doanh thu thực tế là 100.5 tỷ (được trích xuất từ bảng biểu, ưu tiên hơn so với 100 tỷ trong phần văn bản báo cáo)."
     )
     
-    # Patch the invoke method of ChatOpenAI
-    with patch("backend.agents.synthesizer.ChatOpenAI.invoke") as mock_invoke:
+    # Patch the invoke method of ChatOpenAI class (handles class-level patching for Pydantic compatibility)
+    with patch("langchain_openai.ChatOpenAI.invoke") as mock_invoke:
         mock_invoke.return_value = mock_ai_message
         
         # 3. Invoke synthesizer_node

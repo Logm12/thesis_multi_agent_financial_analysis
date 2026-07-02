@@ -2,8 +2,11 @@ import pandas as pd
 import numpy as np
 
 def clean_vas_column(series: pd.Series) -> pd.Series:
+    # Pre-process: Detect parenthesized negative numbers and convert to negative sign representation
+    s_prep = series.astype(str).str.strip()
+    s_prep = s_prep.str.replace(r'^\((.*)\)$', r'-\1', regex=True)
     # Stage 1: Strip currency, spaces, and other noise except digits, dots, commas, and minus signs
-    s_stage1 = series.astype(str).str.replace(r'[^\d\.,-]', '', regex=True)
+    s_stage1 = s_prep.str.replace(r'[^\d\.,-]', '', regex=True)
     # Stage 2: Remove dot thousands separators
     s_stage2 = s_stage1.str.replace('.', '', regex=False)
     # Stage 3: Replace decimal comma with dot and cast to float
@@ -18,7 +21,8 @@ def test_vas_normalization_pipeline():
         "100",
         "1.234,56",
         "0,05",
-        "1.000.000"
+        "1.000.000",
+        "(120.000,00)"
     ])
     
     expected = [
@@ -28,7 +32,8 @@ def test_vas_normalization_pipeline():
         100.0,
         1234.56,
         0.05,
-        1000000.0
+        1000000.0,
+        -120000.0
     ]
     
     outputs = clean_vas_column(inputs)

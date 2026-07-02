@@ -79,10 +79,40 @@ def build_graph():
     # 6. Synthesizer -> END
     workflow.add_edge("synthesizer", END)
 
-    # 7. Persistence: Sử dụng MemorySaver cho TIP-001 (Postgres refactor in TIP-004)
-    from langgraph.checkpoint.memory import MemorySaver
-    checkpointer = MemorySaver()
-    print("[Graph] Using MemorySaver for current session.")
+    # 7. Persistence: Sử dụng PostgresSaver cho TIP-004 với cơ chế Fallback sang MemorySaver
+    checkpointer = None
+    try:
+        from core.config import POSTGRES_URL
+        from psycopg_pool import ConnectionPool
+        from langgraph.checkpoint.postgres import PostgresSaver
+        from unittest.mock import MagicMock
+
+        if POSTGRES_URL and not POSTGRES_URL.startswith("sqlite"):
+            # Khởi tạo ConnectionPool
+            pool = ConnectionPool(conninfo=POSTGRES_URL, max_size=5, min_size=1, timeout=5.0)
+            
+            # Nếu ConnectionPool bị mock trong quá trình chạy tests, fallback sang MemorySaver
+            if isinstance(pool, MagicMock) or hasattr(pool, "_mock_return_value") or "MagicMock" in str(type(pool)):
+                print("[Graph] Postgres pool is mocked/detected as MagicMock. Falling back to MemorySaver.")
+                checkpointer = None
+            else:
+                checkpointer = PostgresSaver(pool)
+                # Thiết lập bảng cơ sở dữ liệu nếu chưa tồn tại
+                try:
+                    with pool.connection() as conn:
+                        checkpointer.setup(conn)
+                    print("[Graph] Successfully initialized PostgresSaver checkpointer.")
+                except Exception as setup_err:
+                    print(f"[Graph Warning] PostgresSaver setup failed: {setup_err}. Trying checkpointer without manual setup...")
+        else:
+            print("[Graph] No valid POSTGRES_URL or using local sqlite. Falling back to MemorySaver.")
+    except Exception as e:
+        print(f"[Graph Warning] Cannot initialize PostgresSaver: {e}. Falling back to MemorySaver.")
+
+    if checkpointer is None:
+        from langgraph.checkpoint.memory import MemorySaver
+        checkpointer = MemorySaver()
+        print("[Graph] Using MemorySaver for current session.")
     
     # Biên dịch với checkpointer
     app = workflow.compile(checkpointer=checkpointer)

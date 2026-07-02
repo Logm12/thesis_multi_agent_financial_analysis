@@ -69,36 +69,40 @@ IMPORTANT: You MUST strictly adhere to the following financial formulas dictiona
 
 IMPORTANT DATA CLEANING RULES:
 1. Vietnamese financial data follows Vietnamese Accounting Standards (VAS) formatting (dot "." for thousands separator, comma "," for decimals, e.g. "1.234.567,89 VND").
-2. To clean such data (especially DataFrame columns containing noise like currency symbols, spaces, or dots/commas), you MUST implement a robust 3-stage normalization pipeline:
+2. To clean such data (especially DataFrame columns containing noise like currency symbols, spaces, or dots/commas), you MUST implement a robust 4-stage normalization pipeline:
+   - Stage 0: Detect parenthesized negative numbers and convert to negative sign representation (e.g., "(120.000,00)" -> "-120.000,00"):
+     `df['col'] = df['col'].astype(str).str.strip().str.replace(r'^\((.*)\)$', r'-\1', regex=True)`
    - Stage 1: Strip currency, spaces, and other noise except digits, dots, commas, and minus signs:
-     `df['col'] = df['col'].astype(str).str.replace(r'[^\\d\\.,-]', '', regex=True)`
+     `df['col'] = df['col'].str.replace(r'[^\\d\\.,-]', '', regex=True)`
    - Stage 2: Remove the thousands separator dots:
      `df['col'] = df['col'].str.replace('.', '', regex=False)`
    - Stage 3: Replace the decimal comma with dot, and cast to numeric:
      `df['col'] = pd.to_numeric(df['col'].str.replace(',', '.', regex=False), errors='coerce')`
-3. Always verify datatypes and cast using the above 3-stage pipeline before calculations.
-4. Wrap all calculation logic in a `try...except Exception as e:` block to log errors as `print(f"[Execution Error] {{e}}")` instead of crashing.
+3. Always verify datatypes and cast using the above 4-stage pipeline before calculations.
+4. Wrap all calculation logic in a `try...except Exception as e:` block to log errors as `print(f"[Execution Error] {e}")` instead of crashing.
 5. All text in charts must be in English. Use clear labels, titles, and legends. Do NOT call matplotlib.use() or set rcParams as they are pre-configured by the sandbox.
 
 --- FEW-SHOT EXAMPLES ---
-Example 1: Calculate ROE using 3-stage column normalization
+Example 1: Calculate ROE using 4-stage column normalization
 ```python
 import pandas as pd
 try:
     # Context: DataFrame with columns 'Year', 'Net Income', 'Total Equity'
     # 'Net Income' values: ["120.500.000 VND", "150.000.000,50 VND"]
     # 'Total Equity' values: ["1.000.000.000 VND", "1.100.000.000,00 VND"]
-    data = {{
+    data = {
         'Year': ['2023', '2024'],
         'Net Income': ["120.500.000 VND", "150.000.000,50 VND"],
         'Total Equity': ["1.000.000.000 VND", "1.100.000.000,00 VND"]
-    }}
+    }
     df = pd.DataFrame(data)
     
-    # 3-Stage Normalization Pipeline
+    # 4-Stage Normalization Pipeline
     for col in ['Net Income', 'Total Equity']:
+        # Stage 0: Convert parenthesized negative numbers
+        df[col] = df[col].astype(str).str.strip().str.replace(r'^\((.*)\)$', r'-\1', regex=True)
         # Stage 1: Clean noise symbols and spaces
-        df[col] = df[col].astype(str).str.replace(r'[^\\d\\.,-]', '', regex=True)
+        df[col] = df[col].str.replace(r'[^\\d\\.,-]', '', regex=True)
         # Stage 2: Remove dot thousands separator
         df[col] = df[col].str.replace('.', '', regex=False)
         # Stage 3: Convert decimal comma to dot and cast to float
